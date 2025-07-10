@@ -1,0 +1,43 @@
+# 编译生成目录和文件
+build/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+
+# Qt Creator 用户配置文件
+*.pro.user
+*.user
+*.qtc
+*.autosave
+
+# Visual Studio/CLion等IDE生成的临时文件
+*.suo
+*.vcxproj.user
+.idea/
+.vscode/
+
+# Qt资源编译生成文件
+qrc_*.cpp
+
+# 临时文件、备份文件
+*~
+*.tmp
+*.bak
+*.swp
+*.swn
+*.swo
+
+# MacOS系统文件
+.DS_Store
+
+# Windows系统文件
+Thumbs.db
+desktop.ini
+
+# 日志、测试输出等
+logs/
+*.log 
