@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>chat_img/20211231082620_b6122.jpg</file>
+        <file>chat_img/20220502135506_b02ee.jpeg</file>
+        <file>chat_img/ice.png</file>
+        <file>chat_img/20210314145921_3bd1d.jpeg</file>
+        <file>style/style.qss</file>
+        <file>chat_img/20221106201543_d7f12.thumb.400_0.jpeg</file>
+    </qresource>
+</RCC>
