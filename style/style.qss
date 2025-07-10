@@ -1,0 +1,115 @@
+/* 窗口背景 - 使用渐变蓝天效果 */
+QDialog#LoginDialog {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #d6f3ff, stop: 1 #ffffff);
+    font-family: "Microsoft YaHei";
+    font-size: 14px;
+    color: #333;
+}
+
+QDialog#RegisterDialog {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #D8BFD8, stop: 1 #FFFAFA);
+    font-family: "Microsoft YaHei";
+    font-size: 14px;
+    color: #333;
+}
+
+/* 标签样式 - 淡灰色文字 */
+QLabel {
+    color: #555;
+    font-weight: bold;
+}
+
+/* 输入框样式 - 卡片风+内阴影 */
+QLineEdit {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #cce7ff;
+    border-radius: 10px;
+    padding: 6px 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+QLineEdit:focus {
+    border: 1px solid #69c0ff;
+    background: #e6f7ff;
+}
+
+/* 登录/注册/确认/取消 按钮 */
+QPushButton#login_btn, QPushButton#register_btn,QPushButton#cancel_btn,QPushButton#confirm_btn {
+background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                  stop:0 #69c0ff, stop:1 #40a9ff);
+    color: white;
+    border-radius: 10px;
+    padding: 8px 20px;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s;
+}
+
+/*悬浮*/
+QPushButton#login_btn:hover, QPushButton#register_btn:hover,QPushButton#cancel_btn:hover,QPushButton#confirm_btn:hover {
+    background-color: #91d5ff;
+}
+QPushButton#login_btn:pressed, QPushButton#register_btn:pressed,QPushButton#cancel_btn:pressed,QPushButton#confirm_btn:pressed {
+    background-color: #1890ff;
+}
+
+/* 忘记密码（透明风格） */
+QPushButton#forgetpwd_btn {
+    background: transparent;/* 背景透明 */
+    color: #888;/* 字体颜色 */
+    border: none;/* 无边框 */
+    font-size: 13px;/* 字体大小 */
+}
+
+#forgetpwd_btn:hover{
+    color:#40a9ff;
+}
+
+#forgetpwd_btn:pressed{
+    color:#00868B;
+}
+
+/* 发送验证码（透明风格） */
+QPushButton#varify_btn {
+    background: transparent;/* 背景透明 */
+    color: #888;/* 字体颜色 */
+    border: none;/* 无边框 */
+    font-size: 13px;/* 字体大小 */
+    font-weight:bold;
+}
+
+#varify_btn:hover{
+    color:#D8BFD8;
+}
+
+#varify_btn:pressed{
+    color:#9370DB;
+}
+
+
+QPushButton {
+    min-width: 80px;
+    min-height: 30px;
+}
+
+/* 注册页面提示词 */
+#rtips_label[state='normal']{
+    color:#ff9800;/*字体橙色*/
+}
+
+#rtips_label[state='err']{
+    color:red;
+}
+
+
+
+/* 登录页面提示词 */
+#ltips_label[state='normal']{
+    color:transparent;
+}
+
+#ltips_label[state='err']{
+    color:red;
+}
