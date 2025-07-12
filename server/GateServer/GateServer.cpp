@@ -20,8 +20,8 @@ int main()
             ioc.stop();
         });
 
-        auto t=std::make_shared<CServer>(ioc, port);
-        t->Start();
+        auto p=std::make_shared<CServer>(ioc, port);
+        p->Start();
         ioc.run();
         
 
