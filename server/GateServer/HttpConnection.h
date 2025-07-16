@@ -4,6 +4,7 @@
 class HttpConnection:public std::enable_shared_from_this<HttpConnection>
 {
 public:
+	friend class LogicSystem;
 	HttpConnection(tcp::socket socket);
 	void Start();
 private:
@@ -11,6 +12,7 @@ private:
 	void CheckDeadline();//检查是否掉线
 	void WriteResponse();//应答
 	void HandleReq();
+	void PreParseGetParam();
 
 	tcp::socket _socket;
 	beast::flat_buffer _buffer{ 8192 };//数据缓存区域
@@ -22,5 +24,7 @@ private:
 		std::chrono::seconds(60)
 	};
 
+	std::string _get_url;
+	std::unordered_map<std::string, std::string> _get_params;
 };
 
