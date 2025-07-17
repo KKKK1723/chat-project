@@ -71,7 +71,7 @@ void RegisterDialog::on_varify_btn_clicked()//点击获取验证码
         //发送验证码
         QJsonObject json_obj;
         json_obj["email"]=email;
-        HttpMgr::GetInstance()->PostHttpReq(QUrl("http://localhost:8080/get_varifycode"),
+        HttpMgr::GetInstance()->PostHttpReq(QUrl(gate_url_prefix+"/get_varifycode"),
                                             json_obj,ReqId::ID_GET_VARIFY_CODE,Modules::REGISTERMOD);
 
     }
@@ -81,7 +81,7 @@ void RegisterDialog::on_varify_btn_clicked()//点击获取验证码
     }
 }
 
-//判断验证码实现成功发送
+//判断验证码是否成功发送
 void RegisterDialog::slot_reg_mod_finish(ReqId id, QString res, ErrorCodes err)
 {
     if(err!=ErrorCodes::SUCCESS)

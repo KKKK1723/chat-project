@@ -11,6 +11,8 @@
 #include<QByteArray>
 #include<QNetworkReply>
 #include<QJsonObject>
+#include<QDir>
+#include<QSettings>
 
 /*
     repolish 用来刷新qss
@@ -35,5 +37,9 @@ enum ErrorCodes
     ERR_JSON=1,//json 解析失败
     ERR_NETWORK,//网络错误
 };
+
+
+
+extern QString gate_url_prefix;
 
 #endif // GLOBAL_H
