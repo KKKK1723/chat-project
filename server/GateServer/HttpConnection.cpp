@@ -155,6 +155,23 @@ void HttpConnection::HandleReq()
 		_response.set(http::field::server, "GateServer"); 
 		WriteResponse();
 	}
+
+	if (_request.method() == http::verb::post)
+	{
+		bool success = LogicSystem::GetInstance()->HandlePost(std::string(_request.target()), shared_from_this());
+		if (!success)
+		{
+			//std::cout << "post not found" << std::endl;
+			_response.result(http::status::not_found);
+			_response.set(http::field::content_type, "text/plain"); // 设置响应头 Content-Type
+			beast::ostream(_response.body()) << "url not found\r\n";
+			WriteResponse();
+			return;
+		}
+		_response.result(http::status::ok);
+		_response.set(http::field::server, "GateServer");
+		WriteResponse();
+	}
 }
 
 void HttpConnection::WriteResponse()

@@ -7,6 +7,11 @@ void LogicSystem::RegGet(std::string url, HttpHandler handler)
 	_get_handlers.insert({ url,handler });
 }
 
+//注册Post请求
+void LogicSystem::RegPost(std::string url, HttpHandler handler)
+{
+	_post_handlers.insert({ url,handler });
+}
 
 LogicSystem::LogicSystem()
 {
@@ -21,6 +26,46 @@ LogicSystem::LogicSystem()
 			beast::ostream(connection->_response.body()) << "param " << i << "  value is " << elem.second << std::endl;
 		}
 		});
+
+	RegPost("/get_varifycode", [](std::shared_ptr<HttpConnection> connection)
+			{
+		
+		auto body_str=boost::beast::buffers_to_string(connection->_request.body().data());
+		std::cout<<"receive body is "<<body_str<<std::endl;
+		connection->_response.set(http::field::content_type,"text/json");
+		Json::Value root;
+		Json::Value src_root;
+		Json::Reader reader;
+		bool success = reader.parse(body_str, src_root);
+		if(!success)
+		{
+			std::cout << "Failed to parse JSON data!" << std::endl;
+			root["error"] =ErrorCodes::Error_Json ;
+			std::string json_str=root.toStyledString();
+			beast::ostream(connection->_response.body()) << json_str;
+			return true;
+		}
+
+		//判断是否有这个key
+		if (!src_root.isMember("email"))
+		{
+			//std::cout << "没有" << std::endl;
+			std::cout << "Json not have key-email!" << std::endl;
+			root["error"] = ErrorCodes::Error_Json;
+			std::string json_str = root.toStyledString();
+			beast::ostream(connection->_response.body()) << json_str;
+			return true;
+		}
+		//std::cout << "成功" << std::endl;
+		std::string email_str=src_root["email"].asString();
+		std::cout<<"email is "<<email_str<<std::endl;
+		root["error"] = ErrorCodes::Success;
+		root["email"]=src_root["email"]; 
+		std::string json_str = root.toStyledString();
+		beast::ostream(connection->_response.body()) << json_str;
+		return true;
+
+	});
 }
 
 LogicSystem::~LogicSystem()
@@ -36,5 +81,16 @@ bool LogicSystem::HandleGet(std::string url, std::shared_ptr<HttpConnection>conn
 	}
 
 	_get_handlers[url](connection);
+	return true;
+}
+
+bool LogicSystem::HandlePost(std::string url, std::shared_ptr<HttpConnection>connection)
+{
+	if (_post_handlers.find(url) == _post_handlers.end())
+	{
+		return false;
+	}
+
+	_post_handlers[url](connection);
 	return true;
 }
