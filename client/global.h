@@ -10,6 +10,7 @@
 #include<mutex>
 #include<QByteArray>
 #include<QNetworkReply>
+#include<QJsonObject>
 
 /*
     repolish 用来刷新qss

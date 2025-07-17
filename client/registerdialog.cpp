@@ -41,9 +41,9 @@ void RegisterDialog::showTip(QString str,bool b_ok)
     repolish(ui->rtips_label);
 }
 
+//验证码回包 存入map
 void RegisterDialog::initHttpHandlers()
 {
-    //注册获取验证码回包的逻辑
     _handlers.insert(ReqId::ID_GET_VARIFY_CODE,[this](const QJsonObject& jsonObj){
         int error=jsonObj["error"].toInt();
         if(error!=ErrorCodes::SUCCESS)
@@ -69,8 +69,11 @@ void RegisterDialog::on_varify_btn_clicked()//点击获取验证码
     if(match)
     {
         //发送验证码
-        qDebug()<<"ok";
-        showTip(tr("已发送"),true);
+        QJsonObject json_obj;
+        json_obj["email"]=email;
+        HttpMgr::GetInstance()->PostHttpReq(QUrl("http://localhost:8080/get_varifycode"),
+                                            json_obj,ReqId::ID_GET_VARIFY_CODE,Modules::REGISTERMOD);
+
     }
     else
     {
@@ -78,6 +81,7 @@ void RegisterDialog::on_varify_btn_clicked()//点击获取验证码
     }
 }
 
+//判断验证码实现成功发送
 void RegisterDialog::slot_reg_mod_finish(ReqId id, QString res, ErrorCodes err)
 {
     if(err!=ErrorCodes::SUCCESS)
