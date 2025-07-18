@@ -15,17 +15,19 @@ void LogicSystem::RegPost(std::string url, HttpHandler handler)
 
 LogicSystem::LogicSystem()
 {
-	RegGet("/get_test", [](std::shared_ptr<HttpConnection> connection) {
-		beast::ostream(connection->_response.body()) << "receive get_test req"<<std::endl;
-		
+	RegGet("/get_test", [](std::shared_ptr<HttpConnection> connection)
+		   {
+		connection->_response.body().clear();
+		beast::ostream(connection->_response.body()) << "receive get test req\n";
+
 		int i = 0;
 		for (auto& elem : connection->_get_params)
 		{
 			i++;
-			beast::ostream(connection->_response.body()) << "param " << i << "  key is " << elem.first<<std::endl;
-			beast::ostream(connection->_response.body()) << "param " << i << "  value is " << elem.second << std::endl;
-		}
-		});
+			beast::ostream(connection->_response.body()) << "param " << i << "  key is " << elem.first<<"\n";
+			beast::ostream(connection->_response.body()) << "param " << i << "  value is " << elem.second << "\n";
+			;
+		} });
 
 	RegPost("/get_varifycode", [](std::shared_ptr<HttpConnection> connection)
 			{

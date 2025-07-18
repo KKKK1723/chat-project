@@ -98,7 +98,7 @@ std::string UrlDecode(const std::string& str)
 	return strTemp;
 }
 
-
+//解析url
 void HttpConnection::PreParseGetParam() {
 	// 提取 URI  get_test?key1=value1&key2=value2
 	auto uri = _request.target();
@@ -151,6 +151,7 @@ void HttpConnection::HandleReq()
 			WriteResponse();
 			return;
 		}
+		_response.set(http::field::content_type, "text/plain"); // 设置响应头 Content-Type
 		_response.result(http::status::ok);
 		_response.set(http::field::server, "GateServer"); 
 		WriteResponse();
@@ -168,6 +169,7 @@ void HttpConnection::HandleReq()
 			WriteResponse();
 			return;
 		}
+		_response.set(http::field::content_type, "text/plain"); // 设置响应头 Content-Type
 		_response.result(http::status::ok);
 		_response.set(http::field::server, "GateServer");
 		WriteResponse();
