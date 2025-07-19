@@ -1,5 +1,6 @@
 #include"LogicSystem.h"
 #include"HttpConnection.h"
+#include"VerifyGrpcClient.h"
 
 //注册Get请求
 void LogicSystem::RegGet(std::string url, HttpHandler handler)
@@ -15,59 +16,59 @@ void LogicSystem::RegPost(std::string url, HttpHandler handler)
 
 LogicSystem::LogicSystem()
 {
-	RegGet("/get_test", [](std::shared_ptr<HttpConnection> connection)
-		   {
-		connection->_response.body().clear();
-		beast::ostream(connection->_response.body()) << "receive get test req\n";
+	RegGet("/get_test", [](std::shared_ptr<HttpConnection> connection) {
+		beast::ostream(connection->_response.body()) << "receive get_test req" << std::endl;
 
 		int i = 0;
 		for (auto& elem : connection->_get_params)
 		{
 			i++;
-			beast::ostream(connection->_response.body()) << "param " << i << "  key is " << elem.first<<"\n";
-			beast::ostream(connection->_response.body()) << "param " << i << "  value is " << elem.second << "\n";
-			;
-		} });
+			beast::ostream(connection->_response.body()) << "param " << i << "  key is " << elem.first << std::endl;
+			beast::ostream(connection->_response.body()) << "param " << i << "  value is " << elem.second << std::endl;
+		}
+		});
 
 	RegPost("/get_varifycode", [](std::shared_ptr<HttpConnection> connection)
-			{
-		
-		auto body_str=boost::beast::buffers_to_string(connection->_request.body().data());
-		std::cout<<"receive body is "<<body_str<<std::endl;
-		connection->_response.set(http::field::content_type,"text/json");
-		Json::Value root;
-		Json::Value src_root;
-		Json::Reader reader;
-		bool success = reader.parse(body_str, src_root);
-		if(!success)
 		{
-			std::cout << "Failed to parse JSON data!" << std::endl;
-			root["error"] =ErrorCodes::Error_Json ;
-			std::string json_str=root.toStyledString();
-			beast::ostream(connection->_response.body()) << json_str;
-			return true;
-		}
 
-		//判断是否有这个key
-		if (!src_root.isMember("email"))
-		{
-			//std::cout << "没有" << std::endl;
-			std::cout << "Json not have key-email!" << std::endl;
-			root["error"] = ErrorCodes::Error_Json;
+			auto body_str = boost::beast::buffers_to_string(connection->_request.body().data());
+			std::cout << "receive body is " << body_str << std::endl;
+			connection->_response.set(http::field::content_type, "text/json");
+			Json::Value root;
+			Json::Value src_root;
+			Json::Reader reader;
+			bool success = reader.parse(body_str, src_root);
+			if (!success)
+			{
+				std::cout << "Failed to parse JSON data!" << std::endl;
+				root["error"] = ErrorCodes::Error_Json;
+				std::string json_str = root.toStyledString();
+				beast::ostream(connection->_response.body()) << json_str;
+				return true;
+			}
+
+			//判断是否有这个key
+			if (!src_root.isMember("email"))
+			{
+				//std::cout << "没有" << std::endl;
+				std::cout << "Json not have key-email!" << std::endl;
+				root["error"] = ErrorCodes::Error_Json;
+				std::string json_str = root.toStyledString();
+				beast::ostream(connection->_response.body()) << json_str;
+				return true;
+			}
+
+			
+			std::string email_str = src_root["email"].asString();
+			std::cout << "email is " << email_str << std::endl;
+			GetVarifyRsp rsp = VerifyGrpcClient::GetInstance()->GetVerifyCode(email_str);
+			root["error"] = rsp.error();
+			root["email"] = src_root["email"];
 			std::string json_str = root.toStyledString();
 			beast::ostream(connection->_response.body()) << json_str;
 			return true;
-		}
-		//std::cout << "成功" << std::endl;
-		std::string email_str=src_root["email"].asString();
-		std::cout<<"email is "<<email_str<<std::endl;
-		root["error"] = ErrorCodes::Success;
-		root["email"]=src_root["email"]; 
-		std::string json_str = root.toStyledString();
-		beast::ostream(connection->_response.body()) << json_str;
-		return true;
 
-	});
+		});
 }
 
 LogicSystem::~LogicSystem()
