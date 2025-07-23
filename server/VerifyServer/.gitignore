@@ -1,0 +1,6 @@
+node_modules/
+*.log
+*.tmp
+.env
+config.json  # 如果包含敏感数据
+dist/        # 如果有构建输出目录
