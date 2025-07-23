@@ -63,9 +63,8 @@ LogicSystem::LogicSystem()
 			
 			std::string email_str = src_root["email"].asString();
 			std::cout << "email is " << email_str << std::endl;
-			//GetVarifyRsp rsp = VerifyGrpcClient::GetInstance()->GetVerifyCode(email_str);
-			//root["error"] = rsp.error();
-			root["error"] = src_root["error"];
+			GetVarifyRsp rsp = VerifyGrpcClient::GetInstance()->GetVerifyCode(email_str);
+			root["error"] = rsp.error();
 			root["email"] = src_root["email"];
 			std::string json_str = root.toStyledString();
 			beast::ostream(connection->_response.body()) << json_str;
