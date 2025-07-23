@@ -16,17 +16,19 @@ void LogicSystem::RegPost(std::string url, HttpHandler handler)
 
 LogicSystem::LogicSystem()
 {
-	RegGet("/get_test", [](std::shared_ptr<HttpConnection> connection) {
-		beast::ostream(connection->_response.body()) << "receive get_test req" << std::endl;
+	RegGet("/get_test", [](std::shared_ptr<HttpConnection> connection)
+		   {
+		connection->_response.body().clear();
+		beast::ostream(connection->_response.body()) << "receive get test req\n";
 
 		int i = 0;
 		for (auto& elem : connection->_get_params)
 		{
 			i++;
-			beast::ostream(connection->_response.body()) << "param " << i << "  key is " << elem.first << std::endl;
-			beast::ostream(connection->_response.body()) << "param " << i << "  value is " << elem.second << std::endl;
-		}
-		});
+			beast::ostream(connection->_response.body()) << "param " << i << "  key is " << elem.first << "\n";
+			beast::ostream(connection->_response.body()) << "param " << i << "  value is " << elem.second << "\n";
+			;
+		} });
 
 	RegPost("/get_varifycode", [](std::shared_ptr<HttpConnection> connection)
 		{
@@ -61,8 +63,9 @@ LogicSystem::LogicSystem()
 			
 			std::string email_str = src_root["email"].asString();
 			std::cout << "email is " << email_str << std::endl;
-			GetVarifyRsp rsp = VerifyGrpcClient::GetInstance()->GetVerifyCode(email_str);
-			root["error"] = rsp.error();
+			//GetVarifyRsp rsp = VerifyGrpcClient::GetInstance()->GetVerifyCode(email_str);
+			//root["error"] = rsp.error();
+			root["error"] = src_root["error"];
 			root["email"] = src_root["email"];
 			std::string json_str = root.toStyledString();
 			beast::ostream(connection->_response.body()) << json_str;
