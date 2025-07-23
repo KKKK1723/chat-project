@@ -4,6 +4,7 @@
 #include<json/reader.h>
 #include"CServer.h"
 #include"ConfigMgr.h"
+#include"VerifyGrpcClient.h"
 
 int main()
 {

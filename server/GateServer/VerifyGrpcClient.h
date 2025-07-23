@@ -4,6 +4,7 @@
 #include "const.h"
 #include "Singleton.h"
 
+
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;

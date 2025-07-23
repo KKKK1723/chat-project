@@ -25,6 +25,7 @@ public:
     ~Singleton() {
         std::cout << "this is singleton destruct" << std::endl;
     }
+
 };
 
 template <typename T>
