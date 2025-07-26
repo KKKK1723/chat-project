@@ -8,7 +8,7 @@
 
 int main()
 {
-    ConfigMgr gCfgMgr;
+    auto &gCfgMgr = ConfigMgr::Inst();
     std::string gate_port_str = gCfgMgr["GateServer"]["Port"];
     unsigned short gate_port = atoi(gate_port_str.c_str());
     try
@@ -22,7 +22,6 @@ int main()
             }
             ioc.stop();
             });
-        std::cout<<"新开始"<<std::endl;
         auto p = std::make_shared<CServer>(ioc, gate_port);
         p->Start();
         ioc.run();
