@@ -19,7 +19,7 @@ GetVarifyRsp VerifyGrpcClient::GetVerifyCode(std::string email)
 	request.set_email(email);
 
 	auto stub = pool_->getConnection();
-	Status status = stub->GetVarifyCode(&context, request, &reply);
+    Status status = stub->GetVarifyCode(&context, request, &reply);
 
 	if (status.ok())
 	{
@@ -32,5 +32,6 @@ GetVarifyRsp VerifyGrpcClient::GetVerifyCode(std::string email)
 		pool_->returnConnection(std::move(stub));
 		return reply;
 	}
-}
+ }
+
 
