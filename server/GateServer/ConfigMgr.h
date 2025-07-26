@@ -19,17 +19,21 @@ struct SectionInfo
 	std::map<std::string,std::string>_section_datas;
 };
 
-
 class ConfigMgr
 {
 public:
-	 ConfigMgr();
 	~ConfigMgr()
 	{
 		_config_map.clear();
 	}
 
-	SectionInfo operator [] (const std::string& key)
+	static ConfigMgr &Inst()
+	{
+		static ConfigMgr cfg_mgr;
+		return cfg_mgr;
+	}
+
+	SectionInfo operator[](const std::string &key)
 	{
 		if (_config_map.find(key) == _config_map.end())
 		{
@@ -37,7 +41,11 @@ public:
 		}
 		return _config_map[key];
 	};
-private:
-	std::map<std::string, SectionInfo>_config_map;
-};
 
+	ConfigMgr(const ConfigMgr &t) = delete;
+	ConfigMgr &operator=(const ConfigMgr &t) = delete;
+
+private:
+	ConfigMgr();
+	std::map<std::string, SectionInfo> _config_map;
+};
