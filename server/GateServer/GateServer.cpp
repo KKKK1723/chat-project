@@ -9,6 +9,7 @@
 
 int main()
 {
+    int a = 10;//测试GitHub提交是否加入贡献
     RedisMgr::GetInstance();
     auto &gCfgMgr = ConfigMgr::Inst();
     std::string gate_port_str = gCfgMgr["GateServer"]["Port"];
