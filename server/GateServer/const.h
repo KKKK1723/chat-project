@@ -18,6 +18,7 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include <sw/redis++/redis++.h>
 
 namespace beast = boost::beast;   // from <boost/beast.hpp>
 namespace http = beast::http;     // from <boost/beast/http.hpp>
