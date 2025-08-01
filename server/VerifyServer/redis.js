@@ -12,6 +12,7 @@ const RedisClient = new Redis({
 //监听
 RedisClient.on("error", function (err) {
     console.log("RedisClient connect error");
+    console.log("RedisClient error:", err.message);
     RedisClient.quit();
 });
 
@@ -21,15 +22,15 @@ async function GetRedisValue(key)
 {
     try
     {
-        let value = await RedisClient.get(key);
-        if (value == null)
+        let v = await RedisClient.get(key);
+        if (v == null)
         {
             console.log('GetRedisValue value == null');
             return null
         }
 
         console.log('GetRedisValue value ','<' + v + '>', ' GetRedisValue success' );
-        return value;
+        return v;
     }
     catch (error)
     {
@@ -60,7 +61,7 @@ async function QueryRedisKey(key)
 {
     try
     {
-        const result = await RedisCli.exists(key)
+        const result = await RedisClient.exists(key)
         if (result === 0) {
           console.log('result:<','<'+result+'>','This key is null...');
           return null
