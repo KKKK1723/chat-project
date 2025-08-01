@@ -12,12 +12,40 @@ RegisterDialog::RegisterDialog(QWidget *parent)
 
     //输入密码时进行遮盖
     ui->userpwd_edit->setEchoMode(QLineEdit::Password);
+    ui->lineEdit->setEchoMode(QLineEdit::Password);
 
     //对提示词添加两种样式
     ui->rtips_label->setProperty("state","normal");
     repolish(ui->rtips_label);
     connect(HttpMgr::GetInstance().get(),&HttpMgr::sig_reg_mod_finish,this,&RegisterDialog::slot_reg_mod_finish);
     initHttpHandlers();
+
+    //隐藏
+    QIcon eyeIcon(":/chat_img/eyebrow (1).png");
+    //展示
+    QIcon dpeyeIcon(":/chat_img/eye (1).png");
+
+
+    // 为第一个密码框添加图标
+    QAction* togglePwd1Action = new QAction(eyeIcon, "显示/隐藏密码", this);
+    togglePwd1Action->setCheckable(true);
+    ui->userpwd_edit->addAction(togglePwd1Action, QLineEdit::TrailingPosition);
+
+
+    // 为第二个密码框添加图标
+    QAction* togglePwd2Action = new QAction(eyeIcon, "显示/隐藏密码", this);
+    togglePwd2Action->setCheckable(true);
+    ui->lineEdit->addAction(togglePwd2Action, QLineEdit::TrailingPosition);
+
+    connect(togglePwd1Action, &QAction::toggled, this, [this,togglePwd1Action,eyeIcon,dpeyeIcon](bool checked) {
+        ui->userpwd_edit->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
+        togglePwd1Action->setIcon(checked ? dpeyeIcon : eyeIcon);
+    });
+
+    connect(togglePwd2Action, &QAction::toggled, this, [this,togglePwd2Action,eyeIcon,dpeyeIcon](bool checked) {
+        ui->lineEdit->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
+        togglePwd2Action->setIcon(checked ? dpeyeIcon : eyeIcon);
+    });
 
 }
 
