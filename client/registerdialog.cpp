@@ -47,6 +47,8 @@ RegisterDialog::RegisterDialog(QWidget *parent)
         togglePwd2Action->setIcon(checked ? dpeyeIcon : eyeIcon);
     });
 
+    connect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+
 }
 
 RegisterDialog::~RegisterDialog()
@@ -101,12 +103,49 @@ void RegisterDialog::initHttpHandlers()
 
 }
 
+void RegisterDialog::onEmailTextChanged(const QString &text)
+{
+    static QString lastText;
+
+    // 如果用户手动输入了@，不进行自动补全
+    if (text.contains('@') && !text.endsWith("@qq.com")) {
+        lastText = text;
+        return;
+    }
+
+    // 如果用户删除了@qq.com部分，重新添加
+    if (text.length() < lastText.length() && lastText.endsWith("@qq.com")) {
+        QString baseText = text;
+        if (!baseText.contains('@')) {
+            QString newText = baseText + "@qq.com";
+            disconnect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+            ui->email_edit->setText(newText);
+            connect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+            ui->email_edit->setCursorPosition(baseText.length());
+        }
+    }
+    // 正常情况：添加@qq.com
+    else if (!text.isEmpty() && !text.endsWith("@qq.com") ) {
+        QString newText = text + "@qq.com";
+        disconnect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+        ui->email_edit->setText(newText);
+        connect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+        ui->email_edit->setCursorPosition(text.length());
+    }
+
+    lastText = text;
+}
 
 
 void RegisterDialog::on_varify_btn_clicked()//点击获取验证码
 {
     auto email=ui->email_edit->text();
-    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
+
+    if (!email.endsWith("@qq.com")) {
+        showTip(tr("邮箱地址必须以@qq.com结尾"), false);
+        return;
+    }
+    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@qq\.com)");
     bool match=regex.match(email).hasMatch();
     if(match)
     {
@@ -116,6 +155,10 @@ void RegisterDialog::on_varify_btn_clicked()//点击获取验证码
         HttpMgr::GetInstance()->PostHttpReq(QUrl(gate_url_prefix+"/get_varifycode"),
                                             json_obj,ReqId::ID_GET_VARIFY_CODE,Modules::REGISTERMOD);
 
+    }
+    else if(email=="")
+    {
+        showTip(tr("邮箱地址不能为空"),false);
     }
     else
     {
