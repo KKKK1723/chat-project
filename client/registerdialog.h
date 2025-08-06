@@ -26,6 +26,8 @@ signals:
 private slots:
     void on_varify_btn_clicked();
     void slot_reg_mod_finish(ReqId id,QString res,ErrorCodes err);
+    void on_confirm_btn_clicked();
+    void onEmailTextChanged(const QString &text);
 };
 
 #endif // REGISTERDIALOG_H

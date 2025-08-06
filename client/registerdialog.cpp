@@ -12,12 +12,42 @@ RegisterDialog::RegisterDialog(QWidget *parent)
 
     //输入密码时进行遮盖
     ui->userpwd_edit->setEchoMode(QLineEdit::Password);
+    ui->lineEdit->setEchoMode(QLineEdit::Password);
 
     //对提示词添加两种样式
     ui->rtips_label->setProperty("state","normal");
     repolish(ui->rtips_label);
     connect(HttpMgr::GetInstance().get(),&HttpMgr::sig_reg_mod_finish,this,&RegisterDialog::slot_reg_mod_finish);
     initHttpHandlers();
+
+    //隐藏
+    QIcon eyeIcon(":/chat_img/eyebrow (1).png");
+    //展示
+    QIcon dpeyeIcon(":/chat_img/eye (1).png");
+
+
+    // 为第一个密码框添加图标
+    QAction* togglePwd1Action = new QAction(eyeIcon, "显示/隐藏密码", this);
+    togglePwd1Action->setCheckable(true);
+    ui->userpwd_edit->addAction(togglePwd1Action, QLineEdit::TrailingPosition);
+
+
+    // 为第二个密码框添加图标
+    QAction* togglePwd2Action = new QAction(eyeIcon, "显示/隐藏密码", this);
+    togglePwd2Action->setCheckable(true);
+    ui->lineEdit->addAction(togglePwd2Action, QLineEdit::TrailingPosition);
+
+    connect(togglePwd1Action, &QAction::toggled, this, [this,togglePwd1Action,eyeIcon,dpeyeIcon](bool checked) {
+        ui->userpwd_edit->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
+        togglePwd1Action->setIcon(checked ? dpeyeIcon : eyeIcon);
+    });
+
+    connect(togglePwd2Action, &QAction::toggled, this, [this,togglePwd2Action,eyeIcon,dpeyeIcon](bool checked) {
+        ui->lineEdit->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
+        togglePwd2Action->setIcon(checked ? dpeyeIcon : eyeIcon);
+    });
+
+    connect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
 
 }
 
@@ -57,14 +87,65 @@ void RegisterDialog::initHttpHandlers()
         qDebug()<<"email is "<<email;
 
     });
+
+
+    _handlers.insert(ReqId::ID_REG_USER,[this](const QJsonObject& jsonObj){
+        int error=jsonObj["error"].toInt();
+        if(error!=ErrorCodes::SUCCESS)
+        {
+            showTip(tr("注册失败"),false);
+            return;
+        }
+        auto email=jsonObj["email"].toString();
+        showTip(tr("注册成功"),true);
+        qDebug()<<"email is "<<email;
+    });
+
 }
 
+void RegisterDialog::onEmailTextChanged(const QString &text)
+{
+    static QString lastText;
+
+    // 如果用户手动输入了@，不进行自动补全
+    if (text.contains('@') && !text.endsWith("@qq.com")) {
+        lastText = text;
+        return;
+    }
+
+    // 如果用户删除了@qq.com部分，重新添加
+    if (text.length() < lastText.length() && lastText.endsWith("@qq.com")) {
+        QString baseText = text;
+        if (!baseText.contains('@')) {
+            QString newText = baseText + "@qq.com";
+            disconnect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+            ui->email_edit->setText(newText);
+            connect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+            ui->email_edit->setCursorPosition(baseText.length());
+        }
+    }
+    // 正常情况：添加@qq.com
+    else if (!text.isEmpty() && !text.endsWith("@qq.com") ) {
+        QString newText = text + "@qq.com";
+        disconnect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+        ui->email_edit->setText(newText);
+        connect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
+        ui->email_edit->setCursorPosition(text.length());
+    }
+
+    lastText = text;
+}
 
 
 void RegisterDialog::on_varify_btn_clicked()//点击获取验证码
 {
     auto email=ui->email_edit->text();
-    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
+
+    if (!email.endsWith("@qq.com")) {
+        showTip(tr("邮箱地址必须以@qq.com结尾"), false);
+        return;
+    }
+    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@qq\.com)");
     bool match=regex.match(email).hasMatch();
     if(match)
     {
@@ -74,6 +155,10 @@ void RegisterDialog::on_varify_btn_clicked()//点击获取验证码
         HttpMgr::GetInstance()->PostHttpReq(QUrl(gate_url_prefix+"/get_varifycode"),
                                             json_obj,ReqId::ID_GET_VARIFY_CODE,Modules::REGISTERMOD);
 
+    }
+    else if(email=="")
+    {
+        showTip(tr("邮箱地址不能为空"),false);
     }
     else
     {
@@ -108,5 +193,48 @@ void RegisterDialog::slot_reg_mod_finish(ReqId id, QString res, ErrorCodes err)
     _handlers[id](jsonDoc.object());
     return ;
 
+}
+
+
+void RegisterDialog::on_confirm_btn_clicked()
+{
+    if(ui->email_edit->text()=="")
+    {
+        showTip(tr("邮箱不能为空!"),false);
+    }
+
+    if(ui->varify_edit->text()=="")
+    {
+        showTip(tr("验证码不能为空!"),false);
+    }
+
+    if(ui->username_edit->text()=="")
+    {
+        showTip(tr("用户名不能为空!"),false);
+    }
+
+    if(ui->userpwd_edit->text()=="")
+    {
+        showTip(tr("密码不能为空!"),false);
+    }
+
+    if(ui->lineEdit->text()=="")
+    {
+        showTip(tr("请再次输入确认密码!"),false);
+    }
+
+    if(ui->lineEdit->text()!=ui->userpwd_edit->text())
+    {
+        showTip(tr("两次密码不一致!"),false);
+    }
+
+    QJsonObject json_obj;
+    json_obj["user"] = ui->username_edit->text();
+    json_obj["email"] = ui->email_edit->text();
+    json_obj["passwd"] = ui->userpwd_edit->text();
+    json_obj["confirm"] = ui->lineEdit->text();
+    json_obj["verifycode"] = ui->varify_edit->text();
+    HttpMgr::GetInstance()->PostHttpReq(QUrl(gate_url_prefix+"/user_register"),
+                                        json_obj, ReqId::ID_REG_USER,Modules::REGISTERMOD);
 }
 
