@@ -2,6 +2,8 @@
 #include"HttpConnection.h"
 #include"VerifyGrpcClient.h"
 #include"RedisMgr.h"
+#include"MysqlMgr.h"
+
 
 //注册Get请求
 void LogicSystem::RegGet(std::string url, HttpHandler handler)
@@ -93,13 +95,24 @@ LogicSystem::LogicSystem()
 				}
 
 				//判断验证码是否过期
-				std::string verify_code = RedisMgr::GetInstance()->Get(CODEPREFIX + src_root["email"].asString());
-				if (verify_code=="")
+				std::string verify_code;
+				bool b_get_varify = RedisMgr::GetInstance()->Get(CODEPREFIX + src_root["email"].asString(), verify_code);
+				if (!b_get_varify)
 				{
 					std::cout << " get varify code expired" << std::endl;
 					root["error"] = ErrorCodes::VerifyExpired;
 					std::string json_str = root.toStyledString();
 					beast::ostream(connection->_response.body()) << json_str;
+					return true;
+				}
+
+				int uid = MysqlMgr::GetInstance()->RegisterUser(src_root["user"].asString(), src_root["email"].asString(), src_root["passwd"].asString());
+				if (uid==0||uid==-1)//已经存在
+				{
+					std::cout << " user or email exist  "<<uid<<" " << std::endl;
+					root["error"] = ErrorCodes::UserExist;
+					std::string jsonstr = root.toStyledString();
+					beast::ostream(connection->_response.body()) << jsonstr;
 					return true;
 				}
 
