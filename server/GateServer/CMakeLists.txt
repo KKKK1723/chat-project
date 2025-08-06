@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(GateServer)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)  # 使用C++14，避免MySQL C++ Connector兼容性问题
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -14,9 +14,22 @@ pkg_check_modules(JSONCPP jsoncpp)
 pkg_check_modules(PROTOBUF REQUIRED protobuf)
 pkg_check_modules(GRPC REQUIRED grpc++)
 
-# 查找 redis-plus-plus 和 hiredis
-find_library(REDIS_PLUS_PLUS redis++ HINTS /usr/local/lib)
-find_library(HIREDIS hiredis HINTS /usr/local/lib)
+# 查找 hiredis
+find_library(HIREDIS hiredis HINTS /usr/lib/x86_64-linux-gnu /usr/local/lib)
+
+# 查找 MySQL C++ Connector
+find_library(MYSQLCPPCONN mysqlcppconn HINTS /usr/lib/x86_64-linux-gnu /usr/local/lib64)
+
+# 查找 JsonCpp 库 - 使用正确的路径
+find_library(JSONCPP_LIB jsoncpp HINTS /usr/local/lib /usr/lib/x86_64-linux-gnu)
+
+# 打印调试信息
+message(STATUS "HIREDIS: ${HIREDIS}")
+message(STATUS "MYSQLCPPCONN: ${MYSQLCPPCONN}")
+message(STATUS "JSONCPP_LIB: ${JSONCPP_LIB}")
+message(STATUS "JSONCPP_LIBRARIES: ${JSONCPP_LIBRARIES}")
+message(STATUS "PROTOBUF_LIBRARIES: ${PROTOBUF_LIBRARIES}")
+message(STATUS "GRPC_LIBRARIES: ${GRPC_LIBRARIES}")
 
 # 包含目录
 include_directories(
@@ -24,11 +37,13 @@ include_directories(
     ${JSONCPP_INCLUDE_DIRS}
     ${PROTOBUF_INCLUDE_DIRS}
     ${GRPC_INCLUDE_DIRS}
-    /usr/local/include  # redis-plus-plus 头文件路径
+    /usr/local/include
+    /usr/include/hiredis
+    /usr/include
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# 添加可执行文件 - 包含所有源文件
+# 添加可执行文件
 add_executable(GateServer 
     GateServer.cpp
     HttpConnection.cpp
@@ -40,35 +55,50 @@ add_executable(GateServer
     GrpcConnectionPool.cpp
     RedisMgr.cpp
     RedisConPool.cpp
+    Defer.cpp
+    SqlConnection.cpp
+    MysqlMgr.cpp
+    MysqlDao.cpp
+    MysqlConPool.cpp
+
     message.pb.cc
     message.grpc.pb.cc
-     
 )
 
-# 链接库 - 使用 pkg-config 提供的库信息并添加 redis-plus-plus 和 hiredis
+# 链接库 - 使用 pkg-config 提供的完整链接信息
 target_link_libraries(GateServer
+    ${JSONCPP_LIB}
     ${GRPC_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
     ${Boost_LIBRARIES}
-    ${JSONCPP_LIBRARIES}
-    ${REDIS_PLUS_PLUS}  # 链接 redis-plus-plus
-    ${HIREDIS}          # 链接 hiredis
+    ${HIREDIS}
+    ${MYSQLCPPCONN}
+
     pthread
     dl
     z
+    gpr
+    protoc
 )
 
 # 添加编译标志
 target_compile_options(GateServer PRIVATE 
     ${GRPC_CFLAGS_OTHER}
     ${PROTOBUF_CFLAGS_OTHER}
+    -fpermissive
+    -Wno-deprecated-declarations
+    -Wno-noexcept
+    -D_GLIBCXX_USE_CXX11_ABI=1
+    # -std=gnu++14  # 已删除，避免与CMAKE_CXX_STANDARD冲突
 )
 
 # 添加链接目录
 target_link_directories(GateServer PRIVATE 
     ${GRPC_LIBRARY_DIRS}
     ${PROTOBUF_LIBRARY_DIRS}
-    /usr/local/lib  # redis-plus-plus 和 hiredis 库路径
+    /usr/local/lib
+    /usr/local/lib64
+    /usr/lib/x86_64-linux-gnu
 )
 
 # 复制配置文件
