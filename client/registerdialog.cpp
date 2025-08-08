@@ -6,6 +6,8 @@
 RegisterDialog::RegisterDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::RegisterDialog)
 {
+    _timer = new QTimer(this);
+
     ui->setupUi(this);
     connect(ui->cancel_btn, &QPushButton::clicked, this, &RegisterDialog::SwitchLogin);
 
@@ -57,10 +59,14 @@ RegisterDialog::RegisterDialog(QWidget *parent)
             { CheckUserPwd(); });
     connect(ui->lineEdit, &QLineEdit::editingFinished, this, [this]()
             { CheckUserPwdS(); });
+
+    connect(_timer, &QTimer::timeout, this, [this]()
+            { ReturnLogin(); });
 }
 
 RegisterDialog::~RegisterDialog()
 {
+    _timer->stop();
     delete ui;
 }
 
@@ -98,6 +104,12 @@ void RegisterDialog::deerr(TipErr err)
     showTip(_errmap.first(), false);
 }
 
+void RegisterDialog::ReturnLogin()
+{
+    _timer->stop();
+    emit SwitchLogin();
+}
+
 // 验证码回包 存入map
 void RegisterDialog::initHttpHandlers()
 {
@@ -106,7 +118,7 @@ void RegisterDialog::initHttpHandlers()
                          int error = jsonObj["error"].toInt();
                          if (error != ErrorCodes::SUCCESS)
                          {
-                             showTip(tr("参数错误"), false);
+                             showTip(tr("网络请求错误"), false);
                              return;
                          }
 
@@ -124,7 +136,8 @@ void RegisterDialog::initHttpHandlers()
             return;
         }
         auto email=jsonObj["email"].toString();
-        showTip(tr("注册成功"),true);
+        showTip(tr("注册成功~即将返回登录"),true);
+        _timer->start(3000);
         qDebug()<<"email is "<<email; });
 }
 

@@ -1,11 +1,10 @@
 #ifndef REGISTERDIALOG_H
 #define REGISTERDIALOG_H
 #include <QDialog>
-#include "global.h"
+#include"global.h"
 
-namespace Ui
-{
-    class RegisterDialog;
+namespace Ui {
+class RegisterDialog;
 }
 
 class RegisterDialog : public QDialog
@@ -18,9 +17,9 @@ public:
 
 private:
     Ui::RegisterDialog *ui;
-    QMap<ReqId, std::function<void(const QJsonObject &)>> _handlers;
-    QMap<TipErr, QString> _errmap;
-
+    QMap<ReqId,std::function<void(const QJsonObject&)>> _handlers;
+    QMap<TipErr,QString> _errmap;
+    QTimer *_timer;
 private:
     bool CheckEmail();
     bool CheckVarify();
@@ -29,17 +28,19 @@ private:
     bool CheckUserPwdS();
 
     void initHttpHandlers();
-    void showTip(QString str, bool b_ok);
-    void adderr(TipErr err, QString s);
+    void showTip(QString str,bool b_ok);
+    void adderr(TipErr err,QString s);
     void deerr(TipErr err);
+    void ReturnLogin();
 signals:
-    void SwitchLogin(); // 通知主界面要从注册页面更新为主页面
+    void SwitchLogin();//通知主界面要从注册页面更新为主页面
 private slots:
     void on_varify_btn_clicked();
-    void slot_reg_mod_finish(ReqId id, QString res, ErrorCodes err);
+    void slot_reg_mod_finish(ReqId id,QString res,ErrorCodes err);
     void on_confirm_btn_clicked();
     void onEmailTextChanged(const QString &text);
     void OnCheckVerifyIsEmpty();
+
 };
 
 #endif // REGISTERDIALOG_H
