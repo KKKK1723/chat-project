@@ -32,7 +32,8 @@ void TimerBtn::mouseReleaseEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton)
     {
-        _timer->start(1000);
+        //_timer->start(1000);
+        emit CheckVerifyIsEmpty();
         emit clicked();
     }
     QPushButton::mouseReleaseEvent(e);

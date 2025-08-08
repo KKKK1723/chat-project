@@ -28,6 +28,8 @@ private slots:
     void slot_reg_mod_finish(ReqId id,QString res,ErrorCodes err);
     void on_confirm_btn_clicked();
     void onEmailTextChanged(const QString &text);
+    void OnCheckVerifyIsEmpty();
+
 };
 
 #endif // REGISTERDIALOG_H
