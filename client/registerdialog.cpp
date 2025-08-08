@@ -46,6 +46,17 @@ RegisterDialog::RegisterDialog(QWidget *parent)
 
     connect(ui->email_edit, &QLineEdit::textChanged, this, &RegisterDialog::onEmailTextChanged);
     connect(ui->varify_btn, &TimerBtn::CheckVerifyIsEmpty, this, &RegisterDialog::OnCheckVerifyIsEmpty);
+
+    connect(ui->email_edit, &QLineEdit::editingFinished, this, [this]()
+            { CheckEmail(); });
+    connect(ui->varify_edit, &QLineEdit::editingFinished, this, [this]()
+            { CheckVarify(); });
+    connect(ui->username_edit, &QLineEdit::editingFinished, this, [this]()
+            { CheckUserName(); });
+    connect(ui->userpwd_edit, &QLineEdit::editingFinished, this, [this]()
+            { CheckUserPwd(); });
+    connect(ui->lineEdit, &QLineEdit::editingFinished, this, [this]()
+            { CheckUserPwdS(); });
 }
 
 RegisterDialog::~RegisterDialog()
@@ -64,8 +75,27 @@ void RegisterDialog::showTip(QString str, bool b_ok)
     {
         ui->rtips_label->setProperty("state", "err");
     }
+
     ui->rtips_label->setText(str);
+
     repolish(ui->rtips_label);
+}
+
+void RegisterDialog::adderr(TipErr err, QString s)
+{
+    _errmap.insert(err, s);
+    showTip(s, false);
+}
+
+void RegisterDialog::deerr(TipErr err)
+{
+    _errmap.remove(err);
+    if (_errmap.empty())
+    {
+        showTip("", true);
+        return;
+    }
+    showTip(_errmap.first(), false);
 }
 
 // 验证码回包 存入map
@@ -96,6 +126,108 @@ void RegisterDialog::initHttpHandlers()
         auto email=jsonObj["email"].toString();
         showTip(tr("注册成功"),true);
         qDebug()<<"email is "<<email; });
+}
+
+bool RegisterDialog::CheckEmail()
+{
+    auto email = ui->email_edit->text();
+
+    if (email.isEmpty())
+    {
+        adderr(TipErr::TIP_EMAIL_ERR2, tr("邮箱不能为空"));
+        return false;
+    }
+
+    if (!email.endsWith("@qq.com"))
+    {
+        adderr(TipErr::TIP_EMAIL_ERR1, tr("邮箱地址必须以@qq.com结尾"));
+        return false;
+    }
+
+    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@qq\.com)");
+    bool match = regex.match(email).hasMatch();
+    if (match)
+    {
+        deerr(TipErr::TIP_EMAIL_ERR1);
+        deerr(TipErr::TIP_EMAIL_ERR2);
+        return true;
+    }
+}
+
+bool RegisterDialog::CheckVarify()
+{
+    if (ui->varify_edit->text().isEmpty())
+    {
+        adderr(TipErr::TIP_VARIFY_ERR, tr("验证码不能为空"));
+        return false;
+    }
+
+    deerr(TipErr::TIP_VARIFY_ERR);
+    return true;
+}
+
+bool RegisterDialog::CheckUserName()
+{
+    QString user = ui->username_edit->text();
+
+    if (user.isEmpty())
+    {
+        adderr(TipErr::TIP_USER_ERR2, tr("用户名不能为空"));
+        return false;
+    }
+    else if (user.size() > 8)
+    {
+        adderr(TipErr::TIP_USER_ERR3, tr("用户名请小于8字符"));
+        return false;
+    }
+    else if (!QRegularExpression("^[\\p{Han}A-Za-z0-9]+$").match(user).hasMatch())
+    {
+        adderr(TipErr::TIP_USER_ERR1, tr("用户名包含非法字符"));
+        return false;
+    }
+
+    deerr(TipErr::TIP_USER_ERR1);
+    deerr(TipErr::TIP_USER_ERR2);
+    deerr(TipErr::TIP_USER_ERR3);
+    return true;
+}
+
+bool RegisterDialog::CheckUserPwd()
+{
+    QString pwd = ui->userpwd_edit->text();
+    if (pwd.isEmpty())
+    {
+        adderr(TipErr::TIP_PWD_ERR1, tr("密码不能为空"));
+        return false;
+    }
+    else if (pwd.size() < 5 || pwd.size() > 18)
+    {
+        adderr(TipErr::TIP_PWD_ERR2, tr("密码长度应在5~18"));
+        return false;
+    }
+
+    deerr(TipErr::TIP_PWD_ERR1);
+    deerr(TipErr::TIP_PWD_ERR2);
+    return true;
+}
+
+bool RegisterDialog::CheckUserPwdS()
+{
+    QString pwd = ui->lineEdit->text();
+    if (pwd.isEmpty())
+    {
+        adderr(TipErr::TIP_CONFIRM_ERR1, tr("请输入确认密码"));
+        return false;
+    }
+    else if (pwd != ui->userpwd_edit->text())
+    {
+        adderr(TipErr::TIP_CONFIRM_ERR2, tr("两次密码不一致"));
+        return false;
+    }
+
+    deerr(TipErr::TIP_CONFIRM_ERR1);
+    deerr(TipErr::TIP_CONFIRM_ERR2);
+    return true;
 }
 
 void RegisterDialog::onEmailTextChanged(const QString &text)
@@ -156,14 +288,6 @@ void RegisterDialog::OnCheckVerifyIsEmpty()
     {
         ui->varify_btn->_timer->start(1000);
     }
-    else if (email == "")
-    {
-        showTip(tr("邮箱地址不能为空"), false);
-    }
-    else
-    {
-        showTip(tr("邮箱地址不正确"), false);
-    }
 }
 
 void RegisterDialog::on_varify_btn_clicked() // 点击获取验证码
@@ -190,14 +314,6 @@ void RegisterDialog::on_varify_btn_clicked() // 点击获取验证码
         json_obj["email"] = email;
         HttpMgr::GetInstance()->PostHttpReq(QUrl(gate_url_prefix + "/get_varifycode"),
                                             json_obj, ReqId::ID_GET_VARIFY_CODE, Modules::REGISTERMOD);
-    }
-    else if (email == "")
-    {
-        showTip(tr("邮箱地址不能为空"), false);
-    }
-    else
-    {
-        showTip(tr("邮箱地址不正确"), false);
     }
 }
 
@@ -230,35 +346,9 @@ void RegisterDialog::slot_reg_mod_finish(ReqId id, QString res, ErrorCodes err)
 
 void RegisterDialog::on_confirm_btn_clicked()
 {
-    if (ui->email_edit->text() == "")
-    {
-        showTip(tr("邮箱不能为空!"), false);
-    }
 
-    if (ui->varify_edit->text() == "")
-    {
-        showTip(tr("验证码不能为空!"), false);
-    }
-
-    if (ui->username_edit->text() == "")
-    {
-        showTip(tr("用户名不能为空!"), false);
-    }
-
-    if (ui->userpwd_edit->text() == "")
-    {
-        showTip(tr("密码不能为空!"), false);
-    }
-
-    if (ui->lineEdit->text() == "")
-    {
-        showTip(tr("请再次输入确认密码!"), false);
-    }
-
-    if (ui->lineEdit->text() != ui->userpwd_edit->text())
-    {
-        showTip(tr("两次密码不一致!"), false);
-    }
+    if (!CheckEmail() || !CheckVarify() || !CheckUserPwd() || !CheckUserName() || !CheckUserPwdS())
+        return;
 
     QJsonObject json_obj;
     json_obj["user"] = ui->username_edit->text();
