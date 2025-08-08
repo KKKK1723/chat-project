@@ -1,9 +1,15 @@
-#include"global.h"
+#include "global.h"
 
-std::function<void(QWidget*)>repolish=[](QWidget* w){
+std::function<void(QWidget *)> repolish = [](QWidget *w)
+{
     w->style()->unpolish(w);
     w->style()->polish(w);
 };
 
-QString gate_url_prefix="";
+std::function<QByteArray(const QByteArray &)> Hash = [](const QByteArray &pwd)
+{
+    QByteArray result = QCryptographicHash::hash(pwd, QCryptographicHash::Sha256);
+    return result;
+};
 
+QString gate_url_prefix = "";
