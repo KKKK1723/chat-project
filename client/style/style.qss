@@ -15,6 +15,14 @@ QDialog#RegisterDialog {
     color: #333;
 }
 
+QDialog#ResetDialog {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #FFBB66, stop: 1 #FFDDAA);
+    font-family: "Microsoft YaHei";
+    font-size: 14px;
+    color: #333;
+}
+
 /* 标签样式 - 淡灰色文字 */
 QLabel {
     color: #555;
@@ -35,8 +43,9 @@ QLineEdit:focus {
     background: #e6f7ff;
 }
 
-/* 登录/注册/确认/取消 按钮 */
-QPushButton#login_btn, QPushButton#register_btn,QPushButton#cancel_btn,QPushButton#confirm_btn {
+/* 登录/注册/重置密码/确认/取消 按钮 */
+QPushButton#login_btn, QPushButton#register_btn,QPushButton#cancel_btn,QPushButton#confirm_btn,
+QPushButton#reset_btn, QPushButton#reset2_btn_{
 background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
                                   stop:0 #69c0ff, stop:1 #40a9ff);
     color: white;
@@ -48,10 +57,12 @@ background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
 }
 
 /*悬浮*/
-QPushButton#login_btn:hover, QPushButton#register_btn:hover,QPushButton#cancel_btn:hover,QPushButton#confirm_btn:hover {
+QPushButton#login_btn:hover, QPushButton#register_btn:hover,QPushButton#cancel_btn:hover,QPushButton#confirm_btn:hover,
+QPushButton#reset_btn:hover,QPushButton#reset2_btn_:hover{
     background-color: #91d5ff;
 }
-QPushButton#login_btn:pressed, QPushButton#register_btn:pressed,QPushButton#cancel_btn:pressed,QPushButton#confirm_btn:pressed {
+QPushButton#login_btn:pressed, QPushButton#register_btn:pressed,QPushButton#cancel_btn:pressed,QPushButton#confirm_btn:pressed ,
+QPushButton#reset_btn:pressed,QPushButton#reset2_btn_:pressed{
     background-color: #1890ff;
 }
 
@@ -80,11 +91,27 @@ QPushButton#varify_btn {
     font-weight:bold;
 }
 
+QPushButton#verifycode_btn {
+    background: transparent;/* 背景透明 */
+    color: #888;/* 字体颜色 */
+    border: none;/* 无边框 */
+    font-size: 13px;/* 字体大小 */
+    font-weight:bold;
+}
+
+
 #varify_btn:hover{
     color:#D8BFD8;
 }
 
 #varify_btn:pressed{
+    color:#9370DB;
+}
+#verifycode_btn:hover{
+    color:#D8BFD8;
+}
+
+#verifycode_btn:pressed{
     color:#9370DB;
 }
 
@@ -111,5 +138,14 @@ QPushButton {
 }
 
 #ltips_label[state='err']{
+    color:red;
+}
+
+/* 重置页面提示词 */
+#errtips[state='normal']{
+    color:#00FF00;
+}
+
+#errtips[state='err']{
     color:red;
 }
