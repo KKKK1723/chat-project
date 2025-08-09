@@ -16,10 +16,12 @@ MainWindow::MainWindow(QWidget *parent)
     //页面初始化
     _login_dialog=new LoginDialog();
     _register_dialog=new RegisterDialog();
+    _reset_dialog=new ResetDialog();
 
-    //布局中加入两个页面
+    //页面放入容器
     _stackedLayout->addWidget(_login_dialog);
     _stackedLayout->addWidget(_register_dialog);
+    _stackedLayout->addWidget(_reset_dialog);
 
     //容器放入主窗口中
     setCentralWidget(_centralWidget);
@@ -27,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(_login_dialog,&LoginDialog::SwithRegister,this,&MainWindow::SlotSwitchRegister);//主页面转注册页面
     connect(_register_dialog,&RegisterDialog::SwitchLogin,this,&MainWindow::SlotSwitchLogin);//注册页面转主页面
+    connect(_login_dialog,&LoginDialog::SwithReset,this,&MainWindow::SlotSwitchReset);//主界面转重置密码界面
+    connect(_reset_dialog,&ResetDialog::SwitchLogin,this,&MainWindow::SlotSwitchLogin);//重置密码页面转主页面
 
 }
 
@@ -51,4 +55,9 @@ void MainWindow::SlotSwitchRegister()//登录页面切换到注册页面
 void MainWindow::SlotSwitchLogin()//注册页面切换到登录页面
 {
     _stackedLayout->setCurrentWidget(_login_dialog);
+}
+
+void MainWindow::SlotSwitchReset()
+{
+    _stackedLayout->setCurrentWidget(_reset_dialog);
 }

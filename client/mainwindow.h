@@ -2,19 +2,19 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include"logindialog.h"
-#include"registerdialog.h"
-#include<QStackedLayout>
+#include "logindialog.h"
+#include "registerdialog.h"
+#include "resetdialog.h"
+#include <QStackedLayout>
 /*
  *  file:          mainwindow.h
  *  function:      主窗口
-*/
-
-
+ */
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 QT_END_NAMESPACE
 
@@ -27,14 +27,16 @@ public:
     ~MainWindow();
 
 public slots:
-    void SlotSwitchRegister();//进入注册页面
-    void SlotSwitchLogin();//返回主页面
+    void SlotSwitchRegister(); // 进入注册页面
+    void SlotSwitchLogin();    // 返回主页面
+    void SlotSwitchReset();    // 进入重置密码界面
 
 private:
     Ui::MainWindow *ui;
-    QWidget* _centralWidget;//一个容器 装入登录和注册两个页面
-    QStackedLayout* _stackedLayout;//堆叠布局 方便来回切换两个页面
-    LoginDialog *_login_dialog;
-    RegisterDialog *_register_dialog;
+    QWidget *_centralWidget;          // 一个容器 装入登录和注册两个页面
+    QStackedLayout *_stackedLayout;   // 堆叠布局 方便来回切换两个页面
+    LoginDialog *_login_dialog;       // 登录页面
+    RegisterDialog *_register_dialog; // 注册页面
+    ResetDialog *_reset_dialog;
 };
 #endif // MAINWINDOW_H
