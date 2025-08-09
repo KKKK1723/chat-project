@@ -21,6 +21,9 @@ private:
 
 signals:
     void SwithRegister();//发送信号通知主界面进入注册页面
+    void SwithReset();//发送信号通知主界面进入重置密码页面
+private slots:
+    void on_forgetpwd_btn_clicked();
 };
 
 #endif // LOGINDIALOG_H

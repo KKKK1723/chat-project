@@ -36,3 +36,9 @@ LoginDialog::~LoginDialog()
 {
     delete ui;
 }
+
+void LoginDialog::on_forgetpwd_btn_clicked()
+{
+    emit SwithReset();
+}
+
