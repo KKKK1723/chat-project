@@ -219,7 +219,7 @@ void ResetDialog::initHttpHandlers()
                          qDebug() << "email is " << email;
                      });
 
-    _handlers.insert(ReqId::ID_REG_USER, [this](const QJsonObject &jsonObj)
+    _handlers.insert(ReqId::ID_RESET_PWD, [this](const QJsonObject &jsonObj)
                      {
         int error=jsonObj["error"].toInt();
         if(error!=ErrorCodes::SUCCESS)
@@ -296,6 +296,6 @@ void ResetDialog::on_reset_btn_clicked()
     json_obj["email"] = ui->email_edit->text();
     json_obj["passwd"] = QString((Hash(ui->pwd_edit->text().toUtf8())).toHex());
     json_obj["verifycode"] = ui->verifycode_edit->text();
-    HttpMgr::GetInstance()->PostHttpReq(QUrl(gate_url_prefix + "/user_register"),
+    HttpMgr::GetInstance()->PostHttpReq(QUrl(gate_url_prefix + "/reset_pwd"),
                                         json_obj, ReqId::ID_RESET_PWD, Modules::RESETMOD);
 }
