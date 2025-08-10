@@ -60,3 +60,74 @@ int MysqlDao::RegisterUser(const std::string &name, const std::string &email, co
         return -1;
     }
 }
+
+bool MysqlDao::CheckEmail(const std::string &name, const std::string &email)
+{
+
+    auto con = _mysqlpool->GetConnection();
+    if (con == nullptr)
+    {
+        std::cout << "从mysqlpool中获取空连接" << std::endl;
+        return false;
+    }
+
+    try
+    {
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->_connection->prepareStatement("SELECT email FROM user WHERE name = ?"));
+
+        pstmt->setString(1, name);
+
+        std::unique_ptr<sql::ResultSet> rest(pstmt->executeQuery());
+
+        while (rest->next())
+        {
+            std::cout << "Check Email: " << rest->getString("email") << std::endl;
+            if (email != rest->getString("email"))
+            {
+                _mysqlpool->ReturnConnection(std::move(con));
+                return false;
+            }
+            _mysqlpool->ReturnConnection(std::move(con));
+            return true;
+        }
+    }
+    catch (sql::SQLException &e)
+    {
+        _mysqlpool->ReturnConnection(std::move(con));
+        std::cerr << "SQLException: " << e.what();
+        std::cerr << " (MySQL error code: " << e.getErrorCode();
+        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        return false;
+    }
+}
+
+bool MysqlDao::UpdatePwd(const std::string &name, const std::string &pwd)
+{
+    auto con = _mysqlpool->GetConnection();
+    if (con == nullptr)
+    {
+        std::cout << "从mysqlpool中获取空连接" << std::endl;
+        return false;
+    }
+
+    try
+    {
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->_connection->prepareStatement("UPDATE user SET pwd = ? WHERE name = ?"));
+        pstmt->setString(1, pwd);
+        pstmt->setString(2, name);
+
+        int ans = pstmt->executeUpdate();
+
+        std::cout << "Updated rows: " << ans << std::endl;
+        _mysqlpool->ReturnConnection(std::move(con));
+        return true;
+    }
+    catch (sql::SQLException &e)
+    {
+        _mysqlpool->ReturnConnection(std::move(con));
+        std::cerr << "SQLException: " << e.what();
+        std::cerr << " (MySQL error code: " << e.getErrorCode();
+        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        return false;
+    }
+}
