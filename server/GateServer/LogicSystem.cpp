@@ -3,7 +3,7 @@
 #include"VerifyGrpcClient.h"
 #include"RedisMgr.h"
 #include"MysqlMgr.h"
-
+#include "StatusGrpcClient.h"
 
 //注册Get请求
 void LogicSystem::RegGet(std::string url, HttpHandler handler)
@@ -207,6 +207,60 @@ LogicSystem::LogicSystem()
 	root["verifycode"] = src_root["verifycode"].asString();
 	std::string json_str = root.toStyledString();
 	beast::ostream(connection->_response.body()) << json_str;
+	return true; });
+
+	RegPost("/user_login", [](std::shared_ptr<HttpConnection> connection)
+			{
+	auto body_str = boost::beast::buffers_to_string(connection->_request.body().data());
+	std::cout << "receive data is " << body_str << std::endl;
+
+	connection->_response.set(http::field::content_type, "text/json");
+	Json::Value root;
+	Json::Value src_root;
+	Json::Reader reader;
+	bool success=reader.parse(body_str, src_root);
+
+	if (!success)
+	{
+		std::cout << "Failed to parse JSON data! " << std::endl;
+		root["error"] = ErrorCodes::Error_Json;
+		auto json_str = root.toStyledString();
+		beast::ostream(connection->_response.body()) << json_str;
+		return true;
+	}
+
+	auto name = src_root["user"].asString();
+	auto pwd = src_root["passwd"].asString();
+	UserInfo userinfo;
+	if (!MysqlMgr::GetInstance()->CheckPwd(name, pwd, userinfo))
+	{
+		std::cout << "用户名与密码不匹配" << std::endl;
+		root["error"] = ErrorCodes::PasswdErr;
+		auto json_str = root.toStyledString();
+		beast::ostream(connection->_response.body()) << json_str;
+		return true;
+	}
+
+	//查询StatusServer找到合适的连接
+	auto reply = StatusGrpcClient::GetInstance()->GetChatServer(userinfo.uid);
+	if (reply.error()) {
+		std::cout << " grpc get chat server failed, error is " << reply.error() << std::endl;
+		root["error"] = ErrorCodes::RPCGetFailed;
+		std::string jsonstr = root.toStyledString();
+		beast::ostream(connection->_response.body()) << jsonstr;
+		return true;
+	}
+
+	std::cout << "succeed to load userinfo uid is " << userinfo.uid << std::endl;
+	root["error"] = 0;
+	root["user"] = name;
+	root["uid"] = userinfo.uid;
+	root["token"] = reply.token();
+	root["host"] = reply.host();
+	root["port"] = reply.port();
+	std::string jsonstr = root.toStyledString();
+	std::cout << "回传的json ：" << jsonstr << std::endl;
+	beast::ostream(connection->_response.body()) << jsonstr;
 	return true; });
 }
 
