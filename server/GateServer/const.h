@@ -55,4 +55,13 @@ enum ErrorCodes
     PasswdErr = 1006,       // 密码错误
     EmailNotMatch = 1007,   // 邮箱不匹配
     PasswdUpDateErr = 1008, // 密码更新失败
+    RPCGetFailed = 1009,//GRPC获取失败
+};
+
+struct UserInfo
+{
+    std::string name;
+    std::string email;
+    int uid;
+    std::string pwd;
 };

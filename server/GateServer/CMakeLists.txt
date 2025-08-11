@@ -60,7 +60,9 @@ add_executable(GateServer
     MysqlMgr.cpp
     MysqlDao.cpp
     MysqlConPool.cpp
-
+    StatusConPool.cpp
+    StatusGrpcClient.cpp
+    
     message.pb.cc
     message.grpc.pb.cc
 )
