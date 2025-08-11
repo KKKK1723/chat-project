@@ -29,7 +29,7 @@ LoginDialog::LoginDialog(QWidget *parent)
         ui->user_pwd_edit->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
         togglePwdAction->setIcon(checked ? dpeyeIcon : eyeIcon); });
 
-    connect(HttpMgr::GetInstance().get(), &HttpMgr::sig_login_mod_finish, this, LoginDialog::slot_log_mod_finish);
+    connect(HttpMgr::GetInstance().get(), &HttpMgr::sig_login_mod_finish, this, &LoginDialog::slot_log_mod_finish);
 
     initHttpHandlers();
 }
@@ -77,7 +77,8 @@ void LoginDialog::initHttpHandlers()
         _token = si.Token;
         qDebug()<< "email is " << email << " uid is " << si.Uid <<" host is "
                  << si.Host << " Port is " << si.Port << " Token is " << si.Token;
-        emit sig_connect_tcp(si); });
+        emit sig_connect_tcp(si);
+        showTip(tr("登录成功"),true); });
 }
 
 void LoginDialog::on_forgetpwd_btn_clicked()
@@ -97,12 +98,12 @@ void LoginDialog::on_login_btn_clicked()
         showTip("密码不能为空", false);
         return;
     }
-
+    qDebug() << "点击登录";
     QJsonObject json_obj;
     json_obj["user"] = ui->user_account_edit->text();
     json_obj["passwd"] = QString((Hash(ui->user_pwd_edit->text().toUtf8())).toHex());
     HttpMgr::GetInstance()->PostHttpReq(QUrl(gate_url_prefix + "/user_login"),
-                                        json_obj, ReqId::ID_REG_USER, Modules::REGISTERMOD);
+                                        json_obj, ReqId::ID_LOGIN_USER, Modules::LOGINMOD);
 }
 
 void LoginDialog::slot_log_mod_finish(ReqId id, QString res, ErrorCodes err)
