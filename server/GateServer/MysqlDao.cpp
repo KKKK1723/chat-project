@@ -131,3 +131,48 @@ bool MysqlDao::UpdatePwd(const std::string &name, const std::string &pwd)
         return false;
     }
 }
+
+bool MysqlDao::CheckPwd(const std::string &name, const std::string &pwd, UserInfo &userinfo)
+{
+    auto con = _mysqlpool->GetConnection();
+    if (con == nullptr)
+    {
+        std::cout << "从mysqlpool中获取空连接" << std::endl;
+        return false;
+    }
+
+    Defer defer([this, &con]()
+                { _mysqlpool->ReturnConnection(std::move(con)); });
+
+    try
+    {
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->_connection->prepareStatement("SELECT * FROM user WHERE name = ?"));
+        pstmt->setString(1, name);
+
+        std::unique_ptr<sql::ResultSet> rest(pstmt->executeQuery());
+
+        std::string pwdd = "";
+        if (rest->next())
+        {
+            pwdd = rest->getString("pwd");
+            std::cout << "Password: " << pwdd << std::endl;
+        }
+        else
+        {
+            return false;
+        }
+
+        userinfo.name = name;
+        userinfo.pwd = pwdd;
+        userinfo.email = rest->getString("email");
+        userinfo.uid = rest->getInt("uid");
+        return true;
+    }
+    catch (sql::SQLException &e)
+    {
+        std::cerr << "SQLException: " << e.what();
+        std::cerr << " (MySQL error code: " << e.getErrorCode();
+        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        return false;
+    }
+}

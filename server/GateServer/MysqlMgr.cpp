@@ -8,15 +8,19 @@ int MysqlMgr::RegisterUser(const std::string &name, const std::string &email, co
     return _dao.RegisterUser(name, email, pwd);
 }
 
-bool MysqlMgr::CheckEmail(const std::string& name, const std::string& email)
+bool MysqlMgr::CheckEmail(const std::string &name, const std::string &email)
 {
     return _dao.CheckEmail(name, email);
 }
 
-bool MysqlMgr::UpdatePwd(const std::string& name, const std::string& pwd)
+bool MysqlMgr::UpdatePwd(const std::string &name, const std::string &pwd)
 {
     return _dao.UpdatePwd(name, pwd);
+}
 
+bool MysqlMgr::CheckPwd(const std::string &name, const std::string &pwd, UserInfo &userinfo)
+{
+    return _dao.CheckPwd(name, pwd, userinfo);
 }
 
 MysqlMgr::MysqlMgr()
