@@ -43,7 +43,7 @@ enum ErrorCodes
 {
     SUCCESS=0,
     ERR_JSON=1,//json 解析失败
-    ERR_NETWORK,//网络错误
+    ERR_NETWORK=2,//网络错误
 };
 
 enum TipErr{
