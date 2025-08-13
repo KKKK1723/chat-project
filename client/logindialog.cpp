@@ -1,7 +1,7 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
 #include "global.h"
-
+#include "tcpmgr.h"
 LoginDialog::LoginDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::LoginDialog)
 {
@@ -32,6 +32,9 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(HttpMgr::GetInstance().get(), &HttpMgr::sig_login_mod_finish, this, &LoginDialog::slot_log_mod_finish);
 
     initHttpHandlers();
+
+    connect(this, &LoginDialog::sig_connect_tcp, TcpMgr::GetInstance().get(), &TcpMgr::slot_tcp_connect);
+    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_con_success, this, &LoginDialog::slot_tcp_con_finish);
 }
 
 LoginDialog::~LoginDialog()
@@ -59,6 +62,7 @@ void LoginDialog::initHttpHandlers()
 {
     _handlers.insert(ReqId::ID_LOGIN_USER, [this](const QJsonObject &jsonObj)
                      {
+        qDebug()<<"进入回调";
         int error = jsonObj["error"].toInt();
         if(error != ErrorCodes::SUCCESS){
             showTip(tr("参数错误"),false);
@@ -108,6 +112,8 @@ void LoginDialog::on_login_btn_clicked()
 
 void LoginDialog::slot_log_mod_finish(ReqId id, QString res, ErrorCodes err)
 {
+    qDebug() << "进入slot_log_mod_finis";
+    qDebug() << "id=" << id << " res=" << res << " err=" << err;
     if (err != ErrorCodes::SUCCESS)
     {
         showTip(tr("网络请求错误"), false);
@@ -130,4 +136,24 @@ void LoginDialog::slot_log_mod_finish(ReqId id, QString res, ErrorCodes err)
 
     _handlers[id](jsonDoc.object());
     return;
+}
+
+void LoginDialog::slot_tcp_con_finish(bool t)
+{
+    if (t)
+    {
+        showTip(tr("聊天服务连接成功，正在登录..."), true);
+        QJsonObject object;
+        object["uid"] = _uid;
+        object["token"] = _token;
+
+        QJsonDocument doc(object);
+        QByteArray res = doc.toJson(QJsonDocument::Indented);
+
+        TcpMgr::GetInstance()->sig_send_data(ReqId::ID_CHAT_LOGIN, res);
+    }
+    else
+    {
+        showTip(tr("网络异常"), false);
+    }
 }
