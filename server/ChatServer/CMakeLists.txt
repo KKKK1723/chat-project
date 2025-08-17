@@ -61,7 +61,11 @@ add_executable(ChatServer
     StatusConPool.cpp
     StatusGrpcClient.cpp
     AsioIOServicePool.cpp
-    
+    LogicNode.cpp
+    LogicSystem.cpp
+    MsgNode.cpp
+    RecvNode.cpp
+    SendNode.cpp
     message.pb.cc
     message.grpc.pb.cc
 )
