@@ -19,11 +19,11 @@ int main()
         auto port_str = Inst["SelfServer"]["Port"];
         int port = static_cast<int>(std::stoi(port_str));
         CServer s(ioc, port);
-        std::cout << "hello world！！！！！！！！！！！！！";
+        std::cout << "hello world!!!!!!!!!!!!!!!!!!!!!!!!!";
         ioc.run();
     }
     catch (std::exception &e)
     {
-        std::cout << "exception errer is" << e.what() << std::endl;
+        std::cout << "exception erroer is" << e.what() << std::endl;
     }
 }
