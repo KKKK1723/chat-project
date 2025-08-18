@@ -38,6 +38,9 @@
 // 添加时间相关头文件
 #include <chrono>
 #include <thread>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 namespace beast = boost::beast;   // from <boost/beast.hpp>
 namespace http = beast::http;     // from <boost/beast/http.hpp>
@@ -56,6 +59,8 @@ enum ErrorCodes
     EmailNotMatch = 1007,   // 邮箱不匹配
     PasswdUpDateErr = 1008, // 密码更新失败
     RPCGetFailed = 1009,    // GRPC获取失败
+    TokenInvalid = 1010,    // token错误
+    UidInvalid = 1011,      // uid错误
 };
 
 struct UserInfo
