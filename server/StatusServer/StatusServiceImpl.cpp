@@ -1,11 +1,7 @@
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include "StatusServiceImpl.h"
 #include "ConfigMgr.h"
 #include "const.h"
 #include "RedisMgr.h"
-
 std::string generate_unique_string()
 {
     // 创建UUID对象
@@ -25,6 +21,27 @@ Status StatusServiceImpl::GetChatServer(ServerContext *context, const GetChatSer
     insertToken(request->uid(), reply->token());
     return Status::OK;
 }
+Status StatusServiceImpl::Login(ServerContext *context, const LoginReq *request, LoginRsp *reply)
+{
+    auto uid = request->uid();
+    auto token = request->token();
+    auto iter = _tokens.find(uid);
+    if (iter == _tokens.end())
+    {
+        reply->set_error(ErrorCodes::UidInvalid);
+        return Status::OK;
+    }
+    if (iter->second != token)
+    {
+        reply->set_error(ErrorCodes::TokenInvalid);
+        return Status::OK;
+    }
+    reply->set_uid(uid);
+    reply->set_token(token);
+    reply->set_error(ErrorCodes::Success);
+    return Status::OK;
+}
+
 StatusServiceImpl::StatusServiceImpl()
 {
     auto &cfg = ConfigMgr::Inst();
