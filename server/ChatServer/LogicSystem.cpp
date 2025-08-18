@@ -101,7 +101,12 @@ void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short& m
 
 	if (rsp.error() != ErrorCodes::Success)
 	{
+		std::cout << "状态服务器uid和token与客户端不匹配,状态服务器uid=" << rsp.uid() << " 状态服务器token=" << rsp.token() << std::endl;
 		return;
 	}
 
+	Json::Value rt;
+	rt["error"] = rsp.error();
+	rt["uid"] = rsp.uid();
+	rt["token"] = rsp.token();
 }
