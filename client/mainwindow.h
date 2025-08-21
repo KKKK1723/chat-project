@@ -5,6 +5,7 @@
 #include "logindialog.h"
 #include "registerdialog.h"
 #include "resetdialog.h"
+#include "chatdialog.h"
 #include <QStackedLayout>
 /*
  *  file:          mainwindow.h
@@ -30,6 +31,7 @@ public slots:
     void SlotSwitchRegister(); // 进入注册页面
     void SlotSwitchLogin();    // 返回主页面
     void SlotSwitchReset();    // 进入重置密码界面
+    void SlotSwitchChat();     // 聊天页面
 
 private:
     Ui::MainWindow *ui;
@@ -37,6 +39,10 @@ private:
     QStackedLayout *_stackedLayout;   // 堆叠布局 方便来回切换两个页面
     LoginDialog *_login_dialog;       // 登录页面
     RegisterDialog *_register_dialog; // 注册页面
+    ChatDialog *_chat_dialog;         // 聊天页面
     ResetDialog *_reset_dialog;
+
+private:
+    void initChatSplitter();
 };
 #endif // MAINWINDOW_H
