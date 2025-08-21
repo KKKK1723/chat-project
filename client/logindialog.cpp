@@ -35,6 +35,7 @@ LoginDialog::LoginDialog(QWidget *parent)
 
     connect(this, &LoginDialog::sig_connect_tcp, TcpMgr::GetInstance().get(), &TcpMgr::slot_tcp_connect);
     connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_con_success, this, &LoginDialog::slot_tcp_con_finish);
+    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_login_faild, this, &LoginDialog::slot_login_faild);
 }
 
 LoginDialog::~LoginDialog()
@@ -142,7 +143,8 @@ void LoginDialog::slot_tcp_con_finish(bool t)
 {
     if (t)
     {
-        showTip(tr("聊天服务连接成功，正在登录..."), true);
+        qDebug() << "聊天服务连接成功，正在登录...";
+        showTip(tr("Success"), true);
         QJsonObject object;
         object["uid"] = _uid;
         object["token"] = _token;
@@ -150,10 +152,18 @@ void LoginDialog::slot_tcp_con_finish(bool t)
         QJsonDocument doc(object);
         QByteArray res = doc.toJson(QJsonDocument::Indented);
 
-        TcpMgr::GetInstance()->sig_send_data(ReqId::ID_CHAT_LOGIN, res);
+        emit TcpMgr::GetInstance() -> sig_send_data(ReqId::ID_CHAT_LOGIN, res);
     }
     else
     {
+        qDebug() << "网络异常";
         showTip(tr("网络异常"), false);
     }
+}
+
+void LoginDialog::slot_login_faild(int error)
+{
+    QString result = QString("登录失败");
+    qDebug() << "slot_login_faild error is" << error;
+    showTip(result, false);
 }
