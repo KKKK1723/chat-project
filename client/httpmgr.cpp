@@ -13,7 +13,7 @@ HttpMgr::~HttpMgr()
 
 void HttpMgr::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id, Modules mod)
 {
-
+    qDebug()<<"地址："<<url;
     QByteArray data=QJsonDocument(json).toJson();// JSON 对象序列化为 JSON 字符串（字节流）
     QNetworkRequest request(url);//创建请求对象并绑定地址
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");//在头部中设置发送类型为json
