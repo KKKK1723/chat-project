@@ -1,5 +1,6 @@
 #include "tcpmgr.h"
 #include "QJsonDocument"
+#include "usermgr.h"
 TcpMgr::TcpMgr() : _head_is_over(false), _message_id(0), _message_len(0)
 {
     connect(&_socket, &QTcpSocket::connected, this, [this]()
@@ -94,6 +95,9 @@ void TcpMgr::initHandlers()
             return;
         }
 
+        UserMgr::GetInstance()->SetName(object["name"].toString());
+        UserMgr::GetInstance()->SetUid(object["uid"].toInt());
+        UserMgr::GetInstance()->SetToken(object["token"].toString());
         qDebug()<<"Login success";
         emit sig_switch_chatdialog(); });
 }
