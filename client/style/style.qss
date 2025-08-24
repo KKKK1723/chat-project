@@ -23,14 +23,18 @@ QDialog#ResetDialog {
     color: #333;
 }
 
-/* 标签样式 - 淡灰色文字 */
-QLabel {
+/* 标签样式 - 淡灰色文字（仅登录/注册/重置页） */
+QDialog#LoginDialog QLabel,
+QDialog#RegisterDialog QLabel,
+QDialog#ResetDialog QLabel {
     color: #555;
     font-weight: bold;
 }
 
-/* 输入框样式 - 卡片风+内阴影 */
-QLineEdit {
+/* 输入框样式 - 卡片风+内阴影（仅登录/注册/重置页） */
+QDialog#LoginDialog QLineEdit,
+QDialog#RegisterDialog QLineEdit,
+QDialog#ResetDialog QLineEdit {
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid #cce7ff;
     border-radius: 10px;
@@ -38,7 +42,9 @@ QLineEdit {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-QLineEdit:focus {
+QDialog#LoginDialog QLineEdit:focus,
+QDialog#RegisterDialog QLineEdit:focus,
+QDialog#ResetDialog QLineEdit:focus {
     border: 1px solid #69c0ff;
     background: #e6f7ff;
 }
@@ -116,7 +122,10 @@ QPushButton#verifycode_btn {
 }
 
 
-QPushButton {
+/* 按钮最小尺寸（仅登录/注册/重置页） */
+QDialog#LoginDialog QPushButton,
+QDialog#RegisterDialog QPushButton,
+QDialog#ResetDialog QPushButton {
     min-width: 80px;
     min-height: 30px;
 }
@@ -134,7 +143,7 @@ QPushButton {
 
 /* 登录页面提示词 */
 #ltips_label[state='normal']{
-    color:transparent;
+    color:#ff9800;/*字体橙色*/
 }
 
 #ltips_label[state='err']{
@@ -149,3 +158,284 @@ QPushButton {
 #errtips[state='err']{
     color:red;
 }
+
+
+QDialog#LoginDialog QLineEdit,
+QDialog#RegisterDialog QLineEdit,
+QDialog#ResetDialog QLineEdit {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #cce7ff;
+    border-radius: 10px;
+    padding: 6px 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+QDialog#LoginDialog QLineEdit:focus,
+QDialog#RegisterDialog QLineEdit:focus,
+QDialog#ResetDialog QLineEdit:focus {
+    border: 1px solid #69c0ff;
+    background: #e6f7ff;
+}
+
+/* 登录/注册/重置密码/确认/取消 按钮 */
+QPushButton#login_btn, QPushButton#register_btn,QPushButton#cancel_btn,QPushButton#confirm_btn,
+QPushButton#reset_btn, QPushButton#reset2_btn_{
+background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                  stop:0 #69c0ff, stop:1 #40a9ff);
+    color: white;
+    border-radius: 10px;
+    padding: 8px 20px;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s;
+}
+
+/*悬浮*/
+QPushButton#login_btn:hover, QPushButton#register_btn:hover,QPushButton#cancel_btn:hover,QPushButton#confirm_btn:hover,
+QPushButton#reset_btn:hover,QPushButton#reset2_btn_:hover{
+    background-color: #91d5ff;
+}
+QPushButton#login_btn:pressed, QPushButton#register_btn:pressed,QPushButton#cancel_btn:pressed,QPushButton#confirm_btn:pressed ,
+QPushButton#reset_btn:pressed,QPushButton#reset2_btn_:pressed{
+    background-color: #1890ff;
+}
+
+/* 忘记密码（透明风格） */
+QPushButton#forgetpwd_btn {
+    background: transparent;/* 背景透明 */
+    color: #888;/* 字体颜色 */
+    border: none;/* 无边框 */
+    font-size: 13px;/* 字体大小 */
+}
+
+#forgetpwd_btn:hover{
+    color:#40a9ff;
+}
+
+#forgetpwd_btn:pressed{
+    color:#00868B;
+}
+
+/* 发送验证码（透明风格） */
+QPushButton#varify_btn {
+    background: transparent;/* 背景透明 */
+    color: #888;/* 字体颜色 */
+    border: none;/* 无边框 */
+    font-size: 13px;/* 字体大小 */
+    font-weight:bold;
+}
+
+QPushButton#verifycode_btn {
+    background: transparent;/* 背景透明 */
+    color: #888;/* 字体颜色 */
+    border: none;/* 无边框 */
+    font-size: 13px;/* 字体大小 */
+    font-weight:bold;
+}
+
+
+#varify_btn:hover{
+    color:#D8BFD8;
+}
+
+#varify_btn:pressed{
+    color:#9370DB;
+}
+#verifycode_btn:hover{
+    color:#D8BFD8;
+}
+
+#verifycode_btn:pressed{
+    color:#9370DB;
+}
+
+
+/* 按钮最小尺寸（仅登录/注册/重置页） */
+QDialog#LoginDialog QPushButton,
+QDialog#RegisterDialog QPushButton,
+QDialog#ResetDialog QPushButton {
+    min-width: 80px;
+    min-height: 30px;
+}
+
+/* 注册页面提示词 */
+#rtips_label[state='normal']{
+    color:#ff9800;/*字体橙色*/
+}
+
+#rtips_label[state='err']{
+    color:red;
+}
+
+
+
+/* 登录页面提示词 */
+#ltips_label[state='normal']{
+    color:#ff9800;/*字体橙色*/
+}
+
+#ltips_label[state='err']{
+    color:red;
+}
+
+/* 重置页面提示词 */
+#errtips[state='normal']{
+    color:#00FF00;
+}
+
+#errtips[state='err']{
+    color:red;
+}
+
+
+QDialog#ChatDialog QLineEdit#search_edit {
+    background: #efefef;
+    border: none;
+    border-radius: 8px;
+
+    color: #666;
+}
+QDialog#ChatDialog QLineEdit#search_edit::placeholder { color: #b9b9b9; }
+QDialog#ChatDialog QLineEdit#search_edit:focus { background: #eaeaea; }
+/* ChatDialog 加号按钮 */
+QDialog#ChatDialog QPushButton#add_btn {
+    min-width: 28px; min-height: 28px;
+    max-width: 28px; max-height: 28px;
+    background: #efefef;
+    border: none;
+    border-radius: 8px;
+    color: #c2c2c2;
+    font-weight: 600;
+    font-size: 18px;
+}
+QDialog#ChatDialog QPushButton#add_btn:hover { background: #e9e9e9; }
+QDialog#ChatDialog QPushButton#add_btn:pressed { background: #e0e0e0; }
+
+
+
+
+#chat_user_list {
+    background-color: rgb(247,247,248);
+    border: none;
+}
+
+#chat_user_list::item:selected {
+    background-color: #d3d7d4;
+    border: none;
+    outline: none;
+}
+#chat_user_list::item:hover {
+    background-color: rgb(206,207,208);
+    border: none;
+    outline: none;
+}
+#chat_user_list::focus {
+    border: none;
+    outline: none;
+}
+
+
+#side_bar{
+    background-color:#E6E6FA;
+}
+
+#search_wid{
+    background-color:#F5F5F5;
+}
+
+ChatUserWid {
+    background-color:rgb(247,247,247);
+    border: none;
+}
+#user_chat_lb{
+    color:rgb(153,153,153);
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+}
+#user_name_lb{
+    color:rgb(0,0,0);
+    font-size: 14px;
+    font-weight: normal;
+    font-family: "Microsoft YaHei";
+}
+#time_wid #time_lb{
+   color:rgb(140,140,140);
+   font-size: 12px;
+   font-family: "Microsoft YaHei";
+}
+QScrollBar:vertical {
+    background: transparent; /* 将轨道背景设置为透明 */
+    width: 8px; /* 滚动条宽度，根据需要调整 */
+    margin: 0px; /* 移除滚动条与滑块之间的间距 */
+}
+QScrollBar::handle:vertical {
+    background: rgb(173,170,169); /* 滑块颜色 */
+    min-height: 10px; /* 滑块最小高度，根据需要调整 */
+    border-radius: 4px; /* 滑块边缘圆角，调整以形成椭圆形状 */
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px; /* 移除上下按钮 */
+    border: none; /* 移除边框 */
+    background: transparent; /* 背景透明 */
+}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none; /* 页面滚动部分背景透明 */
+}
+
+
+#title_lb{
+    font-family: "Microsoft YaHei";
+    font-size: 18px;
+    font-weight: normal;
+}
+
+#chat_edit{
+    background: #ffffff;
+    border: none; /* 隐藏边框 */
+    font-family: "Microsoft YaHei"; /* 设置字体 */
+    font-size: 18px; /* 设置字体大小 */
+    padding: 5px; /* 设置内边距 */
+}
+
+#send_wid{
+    background: #ffffff;
+    border: none; /* 隐藏边框 */
+}
+
+#send_btn[state='normal']{
+    background: #f0f0f0;
+    color: #2cb46e;
+    font-size: 16px; /* 设置字体大小 */
+    font-family: "Microsoft YaHei"; /* 设置字体 */
+    border-radius: 20px; /* 设置圆角 */
+}
+#send_btn[state='hover']{
+   background: #d2d2d2;
+   color: #2cb46e;
+   font-size: 16px; /* 设置字体大小 */
+   font-family: "Microsoft YaHei"; /* 设置字体 */
+   border-radius: 20px; /* 设置圆角 */
+}
+#send_btn[state='press']{
+   background: #c6c6c6;
+   color: #2cb46e;
+   font-size: 16px; /* 设置字体大小 */
+   font-family: "Microsoft YaHei"; /* 设置字体 */
+   border-radius: 20px; /* 设置圆角 */
+}
+
+#tool_wid{
+    background: #ffffff;
+    border-bottom: 0.5px solid #ececec; /* 设置下边框颜色和宽度 */
+}
+
+#chat_data_list{
+    background:#f0f0f0;
+}
+
+#chat_bg{
+    background:#f0f0f0;
+}
+
+
+
