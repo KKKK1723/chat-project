@@ -33,6 +33,7 @@ ChatDialog::ChatDialog(QWidget *parent)
         } });
     ui->add_btn->setText("+");
 
+    connect(ui->chat_user_list, &ChatUserList::sig_loading_chat_user, this, &ChatDialog::slot_loading_chat_user);
     ShowSearch(false);
     addChatUserList();
 }
@@ -107,4 +108,9 @@ void ChatDialog::addChatUserList()
         ui->chat_user_list->addItem(item);
         ui->chat_user_list->setItemWidget(item, chat_user_wid);
     }
+}
+
+void ChatDialog::slot_loading_chat_user()
+{
+    addChatUserList();
 }

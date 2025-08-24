@@ -1,10 +1,11 @@
 #ifndef CHATDIALOG_H
 #define CHATDIALOG_H
-#include"global.h"
+#include "global.h"
 #include <QDialog>
 
-namespace Ui {
-class ChatDialog;
+namespace Ui
+{
+    class ChatDialog;
 }
 
 class ChatDialog : public QDialog
@@ -16,11 +17,15 @@ public:
     ~ChatDialog();
     bool ShowSearch(bool b);
     void addChatUserList();
+
 private:
     Ui::ChatDialog *ui;
     ChatUIMode _mode;
     ChatUIMode _state;
     bool _b_loading;
+
+private slots:
+    void slot_loading_chat_user();
 };
 
 #endif // CHATDIALOG_H
