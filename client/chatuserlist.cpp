@@ -1,7 +1,6 @@
 #include "chatuserlist.h"
 
-
-ChatUserList::ChatUserList(QWidget *parent):QListWidget(parent)
+ChatUserList::ChatUserList(QWidget *parent) : QListWidget(parent)
 {
     Q_UNUSED(parent);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -12,26 +11,26 @@ ChatUserList::ChatUserList(QWidget *parent):QListWidget(parent)
 
 ChatUserList::~ChatUserList()
 {
-
 }
 
 bool ChatUserList::eventFilter(QObject *watched, QEvent *event)
 {
-    if(watched==viewport())
+    if (watched == viewport())
     {
-        if(event->type()==QEvent::Enter)
+        if (event->type() == QEvent::Enter)
         {
             this->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         }
-        else if(event->type()==QEvent::Leave)
+        else if (event->type() == QEvent::Leave)
         {
             this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         }
     }
 
-    if (watched == this->viewport() && event->type() == QEvent::Wheel) {
+    if (watched == this->viewport() && event->type() == QEvent::Wheel)
+    {
 
-        QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
+        QWheelEvent *wheelEvent = static_cast<QWheelEvent *>(event);
         int numDegrees = wheelEvent->angleDelta().y() / 8;
         int numSteps = numDegrees / 15; // 计算滚动步数
 
@@ -43,10 +42,11 @@ bool ChatUserList::eventFilter(QObject *watched, QEvent *event)
         int maxScrollValue = scrollBar->maximum();
         int currentValue = scrollBar->value();
 
-        if (maxScrollValue - currentValue <= 0) {
+        if (maxScrollValue - currentValue <= 0)
+        {
             // 滚动到底部，加载新的联系人
-            qDebug()<<"load more chat user";
-            //发送信号通知聊天界面加载更多聊天内容
+            qDebug() << "load more chat user";
+            // 发送信号通知聊天界面加载更多聊天内容
             emit sig_loading_chat_user();
         }
         return true; // 停止事件传递
@@ -54,6 +54,3 @@ bool ChatUserList::eventFilter(QObject *watched, QEvent *event)
 
     return QListWidget::eventFilter(watched, event);
 }
-
-
-
