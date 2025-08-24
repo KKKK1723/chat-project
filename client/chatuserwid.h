@@ -22,7 +22,11 @@ public:
     }
     void SetInfo(QString name, QString head, QString msg);
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
+    void updateElidedText();
     Ui::ChatUserWid *ui;
     QString _name;
     QString _head;
