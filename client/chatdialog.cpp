@@ -6,6 +6,7 @@
 #include "chatuserwid.h"
 #include <QPixmap>
 #include "statewidget.h"
+#include <QMouseEvent>
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::ChatDialog), _b_loading(false), _mode(ChatUIMode::ChatMode), _state(ChatUIMode::ChatMode)
@@ -65,6 +66,8 @@ ChatDialog::ChatDialog(QWidget *parent)
             ClearAllLabelState();
             ShowSearch(true);
         } });
+
+    this->installEventFilter(this);
 }
 
 ChatDialog::~ChatDialog()
@@ -142,6 +145,33 @@ void ChatDialog::addChatUserList()
 void ChatDialog::AddLBGroup(StateWidget *lb)
 {
     lb_vector.emplace_back(lb);
+}
+
+bool ChatDialog::eventFilter(QObject *watched, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        QMouseEvent *e = static_cast<QMouseEvent *>(event);
+        handleGlobalMousePress(e);
+    }
+
+    return QDialog::eventFilter(watched, event);
+}
+
+void ChatDialog::handleGlobalMousePress(QMouseEvent *event)
+{
+    if (_mode != ChatUIMode::SearchMode)
+    {
+        return;
+    }
+
+    QPoint posInSearchList = (ui->search_list->mapFromGlobal(event->globalPosition())).toPoint();
+
+    if (!ui->search_list->rect().contains(posInSearchList))
+    {
+        ui->search_edit->clear();
+        ShowSearch(false);
+    }
 }
 
 void ChatDialog::slot_loading_chat_user()

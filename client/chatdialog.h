@@ -1,11 +1,12 @@
 #ifndef CHATDIALOG_H
 #define CHATDIALOG_H
-#include"global.h"
+#include "global.h"
 #include <QDialog>
-#include<QVector>
+#include <QVector>
 
-namespace Ui {
-class ChatDialog;
+namespace Ui
+{
+    class ChatDialog;
 }
 
 class StateWidget;
@@ -18,14 +19,18 @@ public:
     ~ChatDialog();
     bool ShowSearch(bool b);
     void addChatUserList();
-    QVector<StateWidget*> lb_vector;
-    void AddLBGroup(StateWidget* lb);
+    QVector<StateWidget *> lb_vector;
+    void AddLBGroup(StateWidget *lb);
+    void handleGlobalMousePress(QMouseEvent *event);
+
 private:
     Ui::ChatDialog *ui;
     ChatUIMode _mode;
     ChatUIMode _state;
     bool _b_loading;
 
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
 private slots:
     void slot_loading_chat_user();
     void slot_side_chat();
