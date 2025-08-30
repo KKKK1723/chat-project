@@ -17,7 +17,9 @@ SOURCES += \
     chatuserlist.cpp \
     chatuserwid.cpp \
     chatview.cpp \
+    clickedbtn.cpp \
     clicklabel.cpp \
+    findsuccessdialog.cpp \
     global.cpp \
     httpmgr.cpp \
     listitembase.cpp \
@@ -45,7 +47,9 @@ HEADERS += \
     chatuserlist.h \
     chatuserwid.h \
     chatview.h \
+    clickedbtn.h \
     clicklabel.h \
+    findsuccessdialog.h \
     global.h \
     httpmgr.h \
     listitembase.h \
@@ -69,6 +73,7 @@ FORMS += \
     chatdialog.ui \
     chatpage.ui \
     chatuserwid.ui \
+    findsuccessdialog.ui \
     logindialog.ui \
     mainwindow.ui \
     registerdialog.ui \
@@ -86,8 +91,7 @@ DISTFILES += \
 RESOURCES += \
     rec.qrc
 
-win32:CONFIG(release, debug | release)
-{
+CONFIG(release, debug | release){
     #指定要拷贝的文件目录为工程目录下release目录下的所有dll、lib文件，例如工程目录在D:\QT\Test
     #PWD就为D:/QT/Test，DllFile = D:/QT/Test/release/*.dll
     TargetConfig = $${PWD}/config.ini
@@ -97,5 +101,27 @@ win32:CONFIG(release, debug | release)
     OutputDir =  $${OUT_PWD}/$${DESTDIR}
     OutputDir = $$replace(OutputDir, /, \\)
     //执行copy命令
-    QMAKE_POST_LINK += copy /Y \"$$TargetConfig\" \"$$OutputDir\"
+    QMAKE_POST_LINK += copy /Y \"$$TargetConfig\" \"$$OutputDir\" &
+
+    StaticDir = $${PWD}/chat_img
+    StaticDir = $$replace(StaticDir,/,\\)
+    QMAKE_POST_LINK += xcopy /Y /E /I \"$$StaticDir\" \"$$OutputDir\\chat_img\\\"
+}else{
+    message("release mode")
+    #指定要拷贝的文件目录为工程目录下release目录下的所有dll、lib文件，例如工程目录在D:\QT\Test
+    #PWD就为D:/QT/Test，DllFile = D:/QT/Test/release/*.dll
+    TargetConfig = $${PWD}/config.ini
+    #将输入目录中的"/"替换为"\"
+    TargetConfig = $$replace(TargetConfig, /, \\)
+    #将输出目录中的"/"替换为"\"
+    OutputDir =  $${OUT_PWD}/$${DESTDIR}
+    OutputDir = $$replace(OutputDir, /, \\)
+    //执行copy命令
+    QMAKE_POST_LINK += copy /Y \"$$TargetConfig\" \"$$OutputDir\" &
+
+    StaticDir = $${PWD}/chat_img
+    StaticDir = $$replace(StaticDir,/,\\)
+    QMAKE_POST_LINK += xcopy /Y /E /I \"$$StaticDir\" \"$$OutputDir\\chat_img\\\"
 }
+
+win32-msvc*:QMAKE_CXXFLAGS += /wd"4819" /utf-8

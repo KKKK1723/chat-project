@@ -549,3 +549,42 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
   font-family: "Microsoft YaHei";
   font-size: 12pt;
 }
+
+ClickedBtn#add_friend_btn[state='normal'] {
+    background: #07c160;
+    color: white;
+    border: none;
+    border-radius: 0px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-family: "Microsoft YaHei";
+    font-weight: 500;
+    min-width: 60px;
+    min-height: 28px;
+}
+
+ClickedBtn#add_friend_btn[state='hover'] {
+    background: #06ad56;
+    color: white;
+    border: none;
+    border-radius: 0px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-family: "Microsoft YaHei";
+    font-weight: 500;
+    min-width: 60px;
+    min-height: 28px;
+}
+
+ClickedBtn#add_friend_btn[state='press'] {
+    background: #059a4a;
+    color: white;
+    border: none;
+    border-radius: 0px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-family: "Microsoft YaHei";
+    font-weight: 500;
+    min-width: 60px;
+    min-height: 28px;
+}
