@@ -25,5 +25,15 @@
         <file>chat_img/happy (1).png</file>
         <file>chat_img/folder.png</file>
         <file>chat_img/folder (1).png</file>
+        <file>chat_img/message.png</file>
+        <file>chat_img/message (1).png</file>
+        <file>chat_img/message (2).png</file>
+        <file>chat_img/boy.png</file>
+        <file>chat_img/contact-book (1).png</file>
+        <file>chat_img/contact-book (2).png</file>
+        <file>chat_img/contact-book.png</file>
+        <file>chat_img/red_point.png</file>
+        <file>chat_img/addtip.png</file>
+        <file>chat_img/next.png</file>
     </qresource>
 </RCC>

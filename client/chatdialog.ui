@@ -87,26 +87,26 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="side_head_lb">
            <property name="minimumSize">
             <size>
-             <width>30</width>
-             <height>30</height>
+             <width>40</width>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>30</width>
-             <height>30</height>
+             <width>40</width>
+             <height>40</height>
             </size>
            </property>
            <property name="text">
-            <string>A</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="StateWidget" name="side_chat_lb" native="true">
            <property name="minimumSize">
             <size>
              <width>30</width>
@@ -118,14 +118,11 @@
              <width>30</width>
              <height>30</height>
             </size>
-           </property>
-           <property name="text">
-            <string>B</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_3">
+          <widget class="StateWidget" name="side_contact_lb" native="true">
            <property name="minimumSize">
             <size>
              <width>30</width>
@@ -137,47 +134,6 @@
              <width>30</width>
              <height>30</height>
             </size>
-           </property>
-           <property name="text">
-            <string>C</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="minimumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>D</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="minimumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>E</string>
            </property>
           </widget>
          </item>
@@ -322,7 +278,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QListWidget" name="search_list"/>
+       <widget class="SearchList" name="search_list"/>
       </item>
       <item>
        <widget class="QListWidget" name="con_user_list"/>
@@ -349,6 +305,17 @@
    <extends>QWidget</extends>
    <header location="global">chatpage.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StateWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">statewidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SearchList</class>
+   <extends>QListWidget</extends>
+   <header location="global">searchlist.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
