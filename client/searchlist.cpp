@@ -119,8 +119,42 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
 
         //     //发送tcp请求给chat server
         //     emit TcpMgr::GetInstance()->sig_send_data(ReqId::ID_SEARCH_USER_REQ, jsonData);
+        // 创建一个测试用的 SearchInfo
+        auto testSearchInfo = std::make_shared<SearchInfo>(123, "测试用户", "测试昵称", "测试描述", 1, ":/chat_img/boy.png");
+
+        // 先关闭之前的对话框
+        if (_find_dlg)
+        {
+            _find_dlg->hide();
+            _find_dlg = nullptr;
+        }
+
+        qDebug() << "Creating new FindSuccessDialog...";
         _find_dlg = std::make_shared<FindSuccessDialog>(this);
-        _find_dlg->show();
+
+        if (!_find_dlg)
+        {
+            qDebug() << "ERROR: Failed to create FindSuccessDialog!";
+            return;
+        }
+
+        qDebug() << "FindSuccessDialog created successfully";
+
+        // 使用类型转换调用 SetSearchInfo
+        auto findDialog = std::dynamic_pointer_cast<FindSuccessDialog>(_find_dlg);
+        if (findDialog)
+        {
+            qDebug() << "Type cast successful, calling SetSearchInfo...";
+            findDialog->SetSearchInfo(testSearchInfo);
+            qDebug() << "SetSearchInfo completed, showing dialog...";
+            _find_dlg->show();
+            qDebug() << "Dialog shown successfully";
+        }
+        else
+        {
+            qDebug() << "ERROR: Type cast failed!";
+            _find_dlg = nullptr;
+        }
         return;
     }
 

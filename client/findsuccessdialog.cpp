@@ -1,9 +1,10 @@
 #include "findsuccessdialog.h"
 #include "ui_findsuccessdialog.h"
 #include <QDir>
+#include "applyfriend.h"
 
 FindSuccessDialog::FindSuccessDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::FindSuccessDialog)
+    : QDialog(parent), ui(new Ui::FindSuccessDialog), _parent(parent)
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
@@ -35,10 +36,30 @@ void FindSuccessDialog::SetSearchInfo(std::shared_ptr<SearchInfo> si)
 
 void FindSuccessDialog::on_add_friend_btn_clicked()
 {
-    // this->hide();
-    // //弹出加好友界面
-    // auto applyFriend = new ApplyFriend(_parent);
-    // applyFriend->SetSearchInfo(_si);
-    // applyFriend->setModal(true);
-    // applyFriend->show();
+    qDebug() << "=== Button clicked ===";
+    qDebug() << "_parent is:" << (_parent ? "valid" : "null");
+    qDebug() << "_si is:" << (_si ? "valid" : "null");
+
+    if (!_si)
+    {
+        qDebug() << "ERROR: SearchInfo is null!";
+        return;
+    }
+
+    this->hide();
+
+    qDebug() << "Creating ApplyFriend...";
+    // 弹出加好友界面
+    auto applyFriend = new ApplyFriend(_parent ? _parent : this);
+
+    qDebug() << "ApplyFriend created successfully";
+    qDebug() << "Setting SearchInfo...";
+    applyFriend->SetSearchInfo(_si);
+
+    qDebug() << "SearchInfo set successfully";
+    qDebug() << "Setting modal and showing dialog...";
+    applyFriend->setModal(true);
+    applyFriend->show();
+
+    qDebug() << "=== Dialog shown successfully ===";
 }

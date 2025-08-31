@@ -35,5 +35,7 @@
         <file>chat_img/red_point.png</file>
         <file>chat_img/addtip.png</file>
         <file>chat_img/next.png</file>
+        <file>chat_img/sort.png</file>
+        <file>chat_img/addc.png</file>
     </qresource>
 </RCC>
