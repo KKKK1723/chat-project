@@ -7,15 +7,17 @@
 #include <QPixmap>
 #include "statewidget.h"
 #include <QMouseEvent>
+#include <QTimer>
 
 ChatDialog::ChatDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::ChatDialog), _b_loading(false), _mode(ChatUIMode::ChatMode), _state(ChatUIMode::ChatMode)
+    : QDialog(parent), ui(new Ui::ChatDialog), _b_loading(false), _mode(ChatUIMode::ChatMode), _state(ChatUIMode::ChatMode), _last_widget(nullptr), _cur_chat_uid(0)
 {
     ui->setupUi(this);
 
     ui->search_edit->setPlaceholderText(QStringLiteral("搜索"));
     ui->search_edit->addAction(QIcon(":/chat_img/search (1).png"), QLineEdit::LeadingPosition);
     QAction *ClearEdit = ui->search_edit->addAction(QIcon(":/chat_img/cross1.png"), QLineEdit::TrailingPosition);
+
     ClearEdit->setCheckable(true);
     ClearEdit->setVisible(false);
     connect(ui->search_edit, &QLineEdit::textChanged, this, [this, ClearEdit]()
@@ -58,6 +60,12 @@ ChatDialog::ChatDialog(QWidget *parent)
     connect(ui->side_chat_lb, &StateWidget::clicked, this, &ChatDialog::slot_side_chat);
     connect(ui->side_contact_lb, &StateWidget::clicked, this, &ChatDialog::slot_side_contact);
 
+    // 连接清除搜索框操作
+    // connect(ui->friend_apply_page, &ApplyFriendPage::sig_show_search, this, &ChatDialog::slot_show_search);
+
+    // 设置当前页面
+    ui->stackedWidget->setCurrentWidget(ui->chat_page);
+
     // 显示搜索列表
     connect(ui->search_edit, &QLineEdit::textChanged, this, [this]()
             {
@@ -68,6 +76,11 @@ ChatDialog::ChatDialog(QWidget *parent)
         } });
 
     this->installEventFilter(this);
+
+    qDebug() << "stack idx =" << ui->stackedWidget->currentIndex()
+             << "current =" << ui->stackedWidget->currentWidget()->objectName()
+             << "chat_page type =" << ui->chat_page->metaObject()->className()
+             << "friend_apply_page type =" << ui->friend_apply_page->metaObject()->className();
 }
 
 ChatDialog::~ChatDialog()
@@ -99,28 +112,6 @@ bool ChatDialog::ShowSearch(bool b)
         _mode = ChatUIMode::ContactMode;
     }
 }
-
-std::vector<QString> strs = {"hello world !",
-                             "nice to meet u",
-                             "New year，new life",
-                             "You have to love yourself",
-                             "My love is written in the wind ever since the whole world is you"};
-std::vector<QString> heads = {
-    ":/chat_img/20210411125716_d7ebc.jpeg",
-    ":/chat_img/20210411125716_75b2e.jpeg",
-    ":/chat_img/20201126170549_c29c9.jpeg",
-    ":/chat_img/20201126170544_6afe1.jpeg",
-    ":/chat_img/20200520083558_ZNiBV.jpeg",
-};
-std::vector<QString> names = {
-    "小白熊",
-    "小黑熊",
-    "一二",
-    "布布",
-    "灰灰",
-    "蜜桃",
-    "小懒",
-    "胖熊"};
 
 void ChatDialog::addChatUserList()
 {
@@ -215,4 +206,43 @@ void ChatDialog::ClearAllLabelState()
     {
         ele->ClearState();
     }
+}
+
+void ChatDialog::slot_side_setting()
+{
+    // qDebug()<< "receive side setting clicked";
+    // ClearLabelState(ui->side_settings_lb);
+    // _state = ChatUIMode::SettingsMode;
+    // ShowSearch(false);
+}
+
+void ChatDialog::slot_text_changed(const QString &str)
+{
+    if (!str.isEmpty())
+    {
+        ShowSearch(true);
+    }
+}
+
+void ChatDialog::slot_focus_out()
+{
+    qDebug() << "receive focus out signal";
+    ShowSearch(false);
+}
+
+void ChatDialog::slot_loading_contact_user()
+{
+    qDebug() << "slot loading contact user";
+}
+
+void ChatDialog::slot_switch_apply_friend_page()
+{
+    // qDebug()<<"receive switch apply friend page sig";
+    // _last_widget = ui->friend_apply_page;
+    // ui->stackedWidget->setCurrentWidget(ui->friend_apply_page);
+}
+
+void ChatDialog::slot_show_search(bool show)
+{
+    ShowSearch(show);
 }

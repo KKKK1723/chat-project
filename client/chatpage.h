@@ -3,8 +3,9 @@
 
 #include <QWidget>
 
-namespace Ui {
-class ChatPage;
+namespace Ui
+{
+    class ChatPage;
 }
 
 class ChatPage : public QWidget
@@ -14,6 +15,9 @@ class ChatPage : public QWidget
 public:
     explicit ChatPage(QWidget *parent = nullptr);
     ~ChatPage();
+
+protected:
+    void paintEvent(QPaintEvent *event);
 
 private slots:
     void on_send_btn_clicked();

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1022</width>
-    <height>865</height>
+    <width>841</width>
+    <height>649</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -33,7 +39,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QWidget" name="chat_data_wid" native="true">
+    <widget class="QWidget" name="chat_data_widd" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
