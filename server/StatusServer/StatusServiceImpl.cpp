@@ -76,6 +76,7 @@ ChatServer StatusServiceImpl::getChatServer()
 {
     std::lock_guard<std::mutex> guard(_server_mtx);
 
+
     if (_servers.empty())
     {
         return ChatServer{};
@@ -83,26 +84,32 @@ ChatServer StatusServiceImpl::getChatServer()
 
     auto it = _servers.begin();
     ChatServer minServer = it->second;
+
+    // 从Redis读取实际连接数
+    auto count_str = RedisMgr::GetInstance()->HGet("logincount", minServer.name);
+    int min_count = count_str.empty() ? 0 : std::stoi(count_str);
+
     ++it;
 
     for (; it != _servers.end(); ++it)
     {
-        if (it->second.con_count < minServer.con_count)
+        auto current_count_str = RedisMgr::GetInstance()->HGet("logincount", it->second.name);
+        int current_count = current_count_str.empty() ? 0 : std::stoi(current_count_str);
+
+        if (current_count < min_count)
         {
+            min_count = current_count;
             minServer = it->second;
         }
     }
+
     return minServer;
 }
 
 void StatusServiceImpl::insertToken(int uid, std::string token)
 {
-    /*
     std::string uid_str = std::to_string(uid);
     std::string token_key = USERTOKENPREFIX + uid_str;
-    std::string result=RedisMgr::GetInstance()->Set(token_key, token);
-    std::cout << "Redis Set 返回结果是: " << result << std::endl;
-    */
-    std::lock_guard<std::mutex> guard(_token_mtx);
-    _tokens[uid] = token;
+    RedisMgr::GetInstance()->Set(token_key, token);
+    
 }
