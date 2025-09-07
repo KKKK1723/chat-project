@@ -26,3 +26,13 @@ bool MysqlMgr::CheckPwd(const std::string &name, const std::string &pwd, UserInf
 MysqlMgr::MysqlMgr()
 {
 }
+
+std::shared_ptr<UserInfo> MysqlMgr::GetUser(std::string name)
+{
+    return _dao.GetUser(name);
+}
+
+std::shared_ptr<UserInfo> MysqlMgr::GetUser(int uid)
+{
+    return _dao.GetUser(uid);
+}

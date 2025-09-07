@@ -1,7 +1,8 @@
 #pragma once
-#include "const.h"
-#include "MysqlConPool.h"
-#include "ConfigMgr.h"
+#include"const.h"
+#include"MysqlConPool.h"
+#include"ConfigMgr.h"
+#include"data.h"
 
 class MysqlDao
 {
@@ -12,6 +13,8 @@ public:
     bool CheckEmail(const std::string &name, const std::string &email);
     bool UpdatePwd(const std::string &name, const std::string &pwd);
     bool CheckPwd(const std::string &name, const std::string &pwd, UserInfo &userinfo);
+    std::shared_ptr<UserInfo> GetUser(std::string name);
+    std::shared_ptr<UserInfo> GetUser(int uid);
 
 private:
     std::unique_ptr<MysqlConPool> _mysqlpool;

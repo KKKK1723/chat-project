@@ -176,3 +176,93 @@ bool MysqlDao::CheckPwd(const std::string &name, const std::string &pwd, UserInf
         return false;
     }
 }
+
+std::shared_ptr<UserInfo> MysqlDao::GetUser(std::string name)
+{
+    auto con = _mysqlpool->GetConnection();
+    if (con == nullptr)
+    {
+        std::cout << "从mysqlpool中获取空连接" << std::endl;
+        return nullptr;
+    }
+
+    Defer defer([this, &con]() {
+        _mysqlpool->ReturnConnection(std::move(con));
+        });
+
+
+    try
+    {
+        std::unique_ptr<sql::PreparedStatement>pstmt(con->_connection->prepareStatement("SELECT * FROM user WHERE name = ?"));
+        pstmt->setString(1, name);
+
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+
+        if (res->next())
+        {
+            std::shared_ptr<UserInfo> user_ptr = std::make_shared<UserInfo>();
+            user_ptr->pwd = res->getString("pwd");
+            user_ptr->email = res->getString("email");
+            user_ptr->name = res->getString("name");
+          
+            user_ptr->uid = res->getInt("uid");
+            return user_ptr;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    catch (sql::SQLException& e)
+    {
+        std::cerr << "SQLException: " << e.what();
+        std::cerr << " (MySQL error code: " << e.getErrorCode();
+        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        return nullptr;
+    }
+}
+
+std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid)
+{
+    auto con = _mysqlpool->GetConnection();
+    if (con == nullptr)
+    {
+        std::cout << "从mysqlpool中获取空连接" << std::endl;
+        return nullptr;
+    }
+
+    Defer defer([this, &con]() {
+        _mysqlpool->ReturnConnection(std::move(con));
+        });
+
+
+    try
+    {
+        std::unique_ptr<sql::PreparedStatement>pstmt(con->_connection->prepareStatement("SELECT * FROM user WHERE uid = ?"));
+        pstmt->setInt(1, uid);
+
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+
+        if (res->next())
+        {
+            std::shared_ptr<UserInfo> user_ptr = std::make_shared<UserInfo>();
+            user_ptr->pwd = res->getString("pwd");
+            user_ptr->email = res->getString("email");
+            user_ptr->name = res->getString("name");
+            
+            user_ptr->uid = res->getInt("uid");
+            return user_ptr;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    catch (sql::SQLException& e)
+    {
+        std::cerr << "SQLException: " << e.what();
+        std::cerr << " (MySQL error code: " << e.getErrorCode();
+        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        return nullptr;
+    }
+}
