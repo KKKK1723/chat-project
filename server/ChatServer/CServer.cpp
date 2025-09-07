@@ -1,7 +1,7 @@
 #include "CServer.h"
 #include "AsioIOServicePool.h"
-
-CServer::CServer(boost::asio::io_context& ioc, int port) :_ioc(ioc), _acceptor(ioc, tcp::endpoint(tcp::v4(), port)),_port(port)
+#include "UserMgr.h"
+CServer::CServer(boost::asio::io_context &ioc, unsigned short port) : _ioc(ioc), _acceptor(ioc, tcp::endpoint(tcp::v4(), port)), _port(port)
 {
 	std::cout << "Server start success, listen on port :" << _port << std::endl;
 	StartAccept();
@@ -25,7 +25,7 @@ void CServer::HandleAccept(std::shared_ptr<CSession> session, boost::system::err
 	{
 		session->Start();
 		std::lock_guard<std::mutex> lock(_mutex);
-		_sessions.insert(std::make_pair(session->GetUid(), session));
+		_sessions.insert(std::make_pair(session->GetSessionUid(), session));
 	}
 	else
 	{
@@ -48,11 +48,17 @@ bool CServer::CheckVaild(std::string uuid)
 	}
 }
 
-void CServer::ClearSession(std::string uuid)
+void CServer::ClearSession(std::string session_uid)
 {
-	std::lock_guard<std::mutex> lock(_mutex);
-	if (_sessions.find(uuid) != _sessions.end())
+
+	if (_sessions.find(session_uid) != _sessions.end())
 	{
-		_sessions.erase(uuid);
+		// 移除用户和session的关联
+		UserMgr::GetInstance()->RmvUserSession(_sessions[session_uid]->GetUserId());
+	}
+
+	{
+		std::lock_guard<std::mutex> lock(_mutex);
+		_sessions.erase(session_uid);
 	}
 }
