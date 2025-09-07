@@ -2,6 +2,7 @@
 #include "const.h"
 #include "Singleton.h"
 #include "MysqlDao.h"
+#include "data.h"
 class MysqlMgr : public Singleton<MysqlMgr>, public std::enable_shared_from_this<MysqlMgr>
 {
     friend class Singleton<MysqlMgr>;

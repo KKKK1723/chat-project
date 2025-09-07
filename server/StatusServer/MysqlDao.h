@@ -2,6 +2,7 @@
 #include "const.h"
 #include "MysqlConPool.h"
 #include "ConfigMgr.h"
+#include "data.h"
 
 class MysqlDao
 {
