@@ -63,10 +63,9 @@ enum ErrorCodes
     UidInvalid = 1011,      // uid错误
 };
 
-struct UserInfo
-{
-    std::string name;
-    std::string email;
-    int uid;
-    std::string pwd;
-};
+#define USERIPPREFIX "uip_"
+#define USERTOKENPREFIX "utoken_"
+#define IPCOUNTPREFIX "ipcount_"
+#define USER_BASE_INFO "ubaseinfo_"
+#define LOGIN_COUNT "logincount"
+#define LOCK_COUNT "lockcount"
