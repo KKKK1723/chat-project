@@ -3,6 +3,7 @@
 #include"Singleton.h"
 #include"LogicNode.h"
 
+struct UserInfo;
 class CSession;
 typedef  std::function<void(std::shared_ptr<CSession>, const short& msg_id, const std::string& msg_data)> FunCallBack;
 class LogicSystem:public Singleton<LogicSystem>
@@ -13,6 +14,7 @@ public:
 	void DealQueMsg();
 	void RegisterCallBacks();
 	void LoginHandler(std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data);
+	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo> &userinfo);
 	~LogicSystem();
 
 private:
