@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(_login_dialog,&LoginDialog::SwithReset,this,&MainWindow::SlotSwitchReset);//登录界面转重置密码界面
     connect(_reset_dialog,&ResetDialog::SwitchLogin,this,&MainWindow::SlotSwitchLogin);//重置密码页面转登录页面
     connect(TcpMgr::GetInstance().get(),&TcpMgr::sig_switch_chatdialog,this,&MainWindow::SlotSwitchChat);//登录成功后进入聊天页面
-    emit TcpMgr::GetInstance()->sig_switch_chatdialog();
+    //emit TcpMgr::GetInstance()->sig_switch_chatdialog();
 
 
     initChatSplitter();
