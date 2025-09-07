@@ -57,6 +57,8 @@ add_executable(StatusServer
     StatusServer.cpp
     StatusServiceImpl.cpp
     ChatServer.cpp
+    ChatConPool.cpp
+    ChatGrpcClient.cpp
     message.pb.cc
     message.grpc.pb.cc
 )
