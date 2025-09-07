@@ -11,7 +11,9 @@ class CSession :public std::enable_shared_from_this<CSession>
 public:
 	CSession(boost::asio::io_context& ioc,CServer* server);
 	boost::asio::ip::tcp::socket& GetSocket();
-	std::string GetUid();
+	std::string& GetSessionUid();
+	void SetUserId(int uid);
+	int GetUserId();
 	void Start();
 	void AsyncReadHead(int total_len);
 	void AsyncReadBody(int length);
@@ -20,9 +22,10 @@ public:
 	void Close();
 
 	void Send(const char* msg,short total_len, short msg_id);
+	void Send(std::string msg, short msgid);
 	void HandleWrite(const boost::system::error_code& ec,std::shared_ptr<CSession> self);
 private:
-	std::string _uid;
+	std::string _session_uid;
 	CServer* _server;
 	boost::asio::ip::tcp::socket _socket;
 	char _data[MAX_LENGTH];
@@ -31,5 +34,6 @@ private:
 	std::shared_ptr<MsgNode> _recv_head_node;
 	std::shared_ptr<RecvNode> _recv_msg_node;
 	std::queue<std::shared_ptr<SendNode>> _send_queue;
+	int _user_id;
 };
 

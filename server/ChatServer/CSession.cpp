@@ -6,7 +6,7 @@ CSession::CSession(boost::asio::io_context& ioc, CServer* server):_socket(ioc),_
 {
 	_recv_head_node = std::make_shared<MsgNode>(HEAD_TOTAL_LEN);
 	boost::uuids::uuid  a_uuid = boost::uuids::random_generator()();
-	_uid = boost::uuids::to_string(a_uuid);
+	_session_uid = boost::uuids::to_string(a_uuid);
 }
 
 boost::asio::ip::tcp::socket& CSession::GetSocket()
@@ -14,9 +14,19 @@ boost::asio::ip::tcp::socket& CSession::GetSocket()
 	return _socket;
 }
 
-std::string CSession::GetUid()
+std::string &CSession::GetSessionUid()
 {
-	return _uid;
+	return _session_uid;
+}
+
+void CSession::SetUserId(int uid)
+{
+	_user_id = uid;
+}
+
+int CSession::GetUserId()
+{
+	return _user_id;
 }
 
 void CSession::Start()
@@ -41,14 +51,14 @@ void CSession::AsyncReadHead(int total_len)
 			if (bytes_transfered < HEAD_TOTAL_LEN)
 			{
 				std::cout << "read head len is error,len is" << bytes_transfered << ", head total len is" << HEAD_TOTAL_LEN << std::endl;
-				_server->ClearSession(_uid);
+				_server->ClearSession(_session_uid);
 				Close();
 				return;
 			}
 
-			if (!_server->CheckVaild(_uid))
+			if (!_server->CheckVaild(_session_uid))
 			{
-				std::cout << "this uuid " << _uid << " session is disconnect" << std::endl;
+				std::cout << "this uuid " << _session_uid << " session is disconnect" << std::endl;
 				Close();
 				return;
 			}
@@ -66,7 +76,7 @@ void CSession::AsyncReadHead(int total_len)
 			if (msg_id > MAX_LENGTH)
 			{
 				std::cout << "msg_id is invalid , error msg_id is" << msg_id << std::endl;
-				_server->ClearSession(_uid);
+				_server->ClearSession(_session_uid);
 				return;
 			}
 
@@ -79,7 +89,7 @@ void CSession::AsyncReadHead(int total_len)
 			if (msg_len > MAX_LENGTH)
 			{
 				std::cout << "msg_len is invalid , error msg_len is" << msg_len << std::endl;
-				_server->ClearSession(_uid);
+				_server->ClearSession(_session_uid);
 				return;
 			}
 
@@ -144,14 +154,14 @@ void CSession::AsyncReadBody(int length)
 			if (bytes_transfered < length)
 			{
 				std::cout << "read body len is error,len is" << bytes_transfered << ", body total len is" << length << std::endl;
-				_server->ClearSession(_uid);
+				_server->ClearSession(_session_uid);
 				Close();
 				return;
 			}
 
-			if (!_server->CheckVaild(_uid))
+			if (!_server->CheckVaild(_session_uid))
 			{
-				std::cout << "this uuid " << _uid << " session is disconnect" << std::endl;
+				std::cout << "this uuid " << _session_uid << " session is disconnect" << std::endl;
 				Close();
 				return;
 			}
@@ -204,6 +214,25 @@ void CSession::Send(const char* msg, short total_len, short msg_id)
 		std::bind(&CSession::HandleWrite, this, std::placeholders::_1, shared_from_this()));
 }
 
+void CSession::Send(std::string msg, short msgid)
+{
+	std::lock_guard<std::mutex> lock(_mutex);
+	int send_que_size = _send_queue.size();
+	if (send_que_size > MAX_LENGTH)
+	{
+		std::cout << "session: " << _session_uid << " send que fulled, size is " << MAX_LENGTH << std::endl;
+		return;
+	}
+
+	_send_queue.push(std::make_shared<SendNode>(msg.c_str(), msg.length(), msgid));
+	if (send_que_size > 0)
+	{
+		return;
+	}
+	auto &msgnode = _send_queue.front();
+	boost::asio::async_write(_socket, boost::asio::buffer(msgnode->_data, msgnode->_total_len),
+							 std::bind(&CSession::HandleWrite, this, std::placeholders::_1, shared_from_this()));
+}
 
 void CSession::HandleWrite(const boost::system::error_code& ec, std::shared_ptr<CSession> self)
 {
