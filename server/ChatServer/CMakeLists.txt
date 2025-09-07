@@ -66,6 +66,11 @@ add_executable(ChatServer
     MsgNode.cpp
     RecvNode.cpp
     SendNode.cpp
+    ChatConPool.cpp
+    ChatGrpcClient.cpp
+    ChatServiceImpl.cpp
+    RPConPool.cpp
+    UserMgr.cpp
     message.pb.cc
     message.grpc.pb.cc
 )
