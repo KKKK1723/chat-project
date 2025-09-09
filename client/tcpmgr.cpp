@@ -1,6 +1,7 @@
 #include "tcpmgr.h"
 #include "QJsonDocument"
 #include "usermgr.h"
+#include <QNetworkProxy>
 TcpMgr::TcpMgr() : _head_is_over(false), _message_id(0), _message_len(0)
 {
     connect(&_socket, &QTcpSocket::connected, this, [this]()
@@ -204,5 +205,10 @@ void TcpMgr::slot_tcp_connect(ServerInfo si)
     qDebug() << "Connecting to server...";
     _host = si.Host;
     _port = static_cast<uint16_t>(si.Port.toUInt());
+
+    // 禁用代理，避免代理相关错误
+    _socket.setProxy(QNetworkProxy::NoProxy);
+    qDebug() << "Proxy disabled, connecting to" << si.Host << ":" << _port;
+    
     _socket.connectToHost(si.Host, _port);
 }
