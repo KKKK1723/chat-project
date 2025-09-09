@@ -37,5 +37,6 @@
         <file>chat_img/next.png</file>
         <file>chat_img/sort.png</file>
         <file>chat_img/addc.png</file>
+        <file>chat_img/loading.png</file>
     </qresource>
 </RCC>

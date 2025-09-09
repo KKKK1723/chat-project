@@ -7,6 +7,11 @@
 #include "listitembase.h"
 #include "adduseritem.h"
 #include "findsuccessdialog.h"
+#include "CustomizeEdit.h"
+#include <QJsonDocument>
+#include "findfaildlg.h"
+#include "findsuccessdialog.h"
+#include "loadingdlg.h"
 
 SearchList::SearchList(QWidget *parent) : QListWidget(parent), _find_dlg(nullptr), _search_edit(nullptr), _send_pending(false)
 {
@@ -19,8 +24,8 @@ SearchList::SearchList(QWidget *parent) : QListWidget(parent), _find_dlg(nullptr
     connect(this, &QListWidget::itemClicked, this, &SearchList::slot_item_clicked);
     // 添加条目
     addTipItem();
-    // 连接搜索条目
-    // connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_user_search, this, &SearchList::slot_user_search);
+    // 连接搜索结果
+    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_user_search, this, &SearchList::slot_user_search);
 }
 
 void SearchList::CloseFindDlg()
@@ -39,17 +44,20 @@ void SearchList::SetSearchEdit(QWidget *edit)
 
 void SearchList::waitPending(bool pending)
 {
+    qDebug() << "=== waitPending 被调用，pending=" << pending << " ===";
     if (pending)
     {
-        _loginDialog = new LoginDialog(this);
-        _loginDialog->setModal(true);
-        _loginDialog->show();
+        qDebug() << "显示加载对话框";
+        _loadingDialog = new LoadingDlg(this);
+        _loadingDialog->setModal(true);
+        _loadingDialog->show();
         _send_pending = pending;
     }
     else
     {
-        _loginDialog->hide();
-        _loginDialog->deleteLater();
+        qDebug() << "隐藏加载对话框";
+        _loadingDialog->hide();
+        _loadingDialog->deleteLater();
         _send_pending = pending;
     }
 }
@@ -100,63 +108,72 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
     if (itemType == ListItemType::ADD_USER_TIP_ITEM)
     {
 
-        //     if (_send_pending) {
-        //         return;
-        //     }
-
-        //     if (!_search_edit) {
-        //         return;
-        //     }
-        //     waitPending(true);
-        //     auto search_edit = dynamic_cast<CustomizeEdit*>(_search_edit);
-        //     auto uid_str = search_edit->text();
-        //     //此处发送请求给server
-        //     QJsonObject jsonObj;
-        //     jsonObj["uid"] = uid_str;
-
-        //     QJsonDocument doc(jsonObj);
-        //     QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
-
-        //     //发送tcp请求给chat server
-        //     emit TcpMgr::GetInstance()->sig_send_data(ReqId::ID_SEARCH_USER_REQ, jsonData);
-        // 创建一个测试用的 SearchInfo
-        auto testSearchInfo = std::make_shared<SearchInfo>(123, "测试用户", "测试昵称", "测试描述", 1, ":/chat_img/boy.png");
-
-        // 先关闭之前的对话框
-        if (_find_dlg)
+        if (_send_pending)
         {
-            _find_dlg->hide();
-            _find_dlg = nullptr;
-        }
-
-        qDebug() << "Creating new FindSuccessDialog...";
-        _find_dlg = std::make_shared<FindSuccessDialog>(this);
-
-        if (!_find_dlg)
-        {
-            qDebug() << "ERROR: Failed to create FindSuccessDialog!";
             return;
         }
 
-        qDebug() << "FindSuccessDialog created successfully";
+        if (!_search_edit)
+        {
+            qDebug() << "slot_item_clicked _search_edit is false";
+            return;
+        }
+        waitPending(true);
+        auto search_edit = dynamic_cast<CustomizeEdit *>(_search_edit);
+        if (!search_edit)
+        {
+            qDebug() << "dynamic_cast failed for search_edit";
+            waitPending(false);
+            return;
+        }
+        auto uid_str = search_edit->text();
 
-        // 使用类型转换调用 SetSearchInfo
-        auto findDialog = std::dynamic_pointer_cast<FindSuccessDialog>(_find_dlg);
-        if (findDialog)
-        {
-            qDebug() << "Type cast successful, calling SetSearchInfo...";
-            findDialog->SetSearchInfo(testSearchInfo);
-            qDebug() << "SetSearchInfo completed, showing dialog...";
-            _find_dlg->show();
-            qDebug() << "Dialog shown successfully";
-        }
-        else
-        {
-            qDebug() << "ERROR: Type cast failed!";
-            _find_dlg = nullptr;
-        }
+        // 发送请求给server
+        QJsonObject jsonObj;
+        jsonObj["uid"] = uid_str;
+
+        // 压缩
+        QJsonDocument doc(jsonObj);
+        QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
+
+        // 发送tcp请求给chat server
+        emit TcpMgr::GetInstance() -> sig_send_data(ReqId::ID_SEARCH_USER_REQ, jsonData);
+
         return;
     }
+    // 创建一个测试用的 SearchInfo
+    auto testSearchInfo = std::make_shared<SearchInfo>(123, "测试用户", "测试昵称", "测试描述", 1, ":/chat_img/boy.png");
+
+    // 先关闭之前的对话框
+    // if (_find_dlg) {
+    //     _find_dlg->hide();
+    //     _find_dlg = nullptr;
+    // }
+
+    // qDebug() << "Creating new FindSuccessDialog...";
+    // _find_dlg = std::make_shared<FindSuccessDialog>(this);
+
+    // if (!_find_dlg) {
+    //     qDebug() << "ERROR: Failed to create FindSuccessDialog!";
+    //     return;
+    // }
+
+    // qDebug() << "FindSuccessDialog created successfully";
+
+    // // 使用类型转换调用 SetSearchInfo
+    // auto findDialog = std::dynamic_pointer_cast<FindSuccessDialog>(_find_dlg);
+    // if (findDialog) {
+    //     qDebug() << "Type cast successful, calling SetSearchInfo...";
+    //     findDialog->SetSearchInfo(testSearchInfo);
+    //     qDebug() << "SetSearchInfo completed, showing dialog...";
+    //     _find_dlg->show();
+    //     qDebug() << "Dialog shown successfully";
+    // } else {
+    //     qDebug() << "ERROR: Type cast failed!";
+    //     _find_dlg = nullptr;
+    // }
+    //      return;
+    //  }
 
     // //清除弹出框
     CloseFindDlg();
@@ -164,30 +181,44 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
 
 void SearchList::slot_user_search(std::shared_ptr<SearchInfo> si)
 {
-    // waitPending(false);
-    // if (si == nullptr) {
-    //     _find_dlg = std::make_shared<FindFailDlg>(this);
-    // }else{
-    //     //如果是自己，暂且先直接返回，以后看逻辑扩充
-    //     auto self_uid = UserMgr::GetInstance()->GetUid();
-    //     if (si->_uid == self_uid) {
-    //         return;
-    //     }
-    //     //此处分两种情况，一种是搜多到已经是自己的朋友了，一种是未添加好友
-    //     //查找是否已经是好友
-    //     bool bExist = UserMgr::GetInstance()->CheckFriendById(si->_uid);
-    //     if(bExist){
-    //         //此处处理已经添加的好友，实现页面跳转
-    //         //跳转到聊天界面指定的item中
-    //         emit sig_jump_chat_item(si);
-    //         return;
-    //     }
-    //     //此处先处理为添加的好友
-    //     _find_dlg = std::make_shared<FindSuccessDlg>(this);
-    //     dynamic_pointer_cast<FindSuccessDlg>(_find_dlg)->SetSearchInfo(si);
+    qDebug() << "=== slot_user_search 被调用 ===";
+    qDebug() << "SearchInfo是否为空：" << (si == nullptr);
+    if (si)
+    {
+        qDebug() << "用户名：" << si->_name;
+        qDebug() << "用户ID：" << si->_uid;
+    }
 
-    // }
-    // _find_dlg->show();
+    waitPending(false);
+    if (si == nullptr)
+    {
+        qDebug() << "创建FindFailDlg失败对话框";
+        _find_dlg = std::make_shared<FindFailDlg>(this);
+    }
+    else
+    {
+        qDebug() << "创建FindSuccessDialog成功对话框";
+        // 如果是自己，暂且先直接返回，以后看逻辑扩充
+        //  auto self_uid = UserMgr::GetInstance()->GetUid();
+        //  if (si->_uid == self_uid) {
+        //      return;
+        //  }
+        //  //此处分两种情况，一种是搜多到已经是自己的朋友了，一种是未添加好友
+        //  //查找是否已经是好友
+        //  bool bExist = UserMgr::GetInstance()->CheckFriendById(si->_uid);
+        //  if(bExist){
+        //      //此处处理已经添加的好友，实现页面跳转
+        //      //跳转到聊天界面指定的item中
+        //      emit sig_jump_chat_item(si);
+        //      return;
+        //  }
+        //  //此处先处理为添加的好友
+        _find_dlg = std::make_shared<FindSuccessDialog>(this);
+        std::dynamic_pointer_cast<FindSuccessDialog>(_find_dlg)->SetSearchInfo(si);
+    }
+    qDebug() << "准备显示对话框";
+    _find_dlg->show();
+    qDebug() << "对话框已显示";
 }
 bool SearchList::eventFilter(QObject *watched, QEvent *event)
 {

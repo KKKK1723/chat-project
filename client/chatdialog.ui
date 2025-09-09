@@ -211,7 +211,7 @@
           <number>9</number>
          </property>
          <item>
-          <widget class="QLineEdit" name="search_edit">
+          <widget class="CustomizeEdit" name="search_edit">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -225,19 +225,6 @@
             </size>
            </property>
           </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
          </item>
          <item>
           <widget class="QPushButton" name="add_btn">
@@ -330,6 +317,11 @@
    <extends>QWidget</extends>
    <header location="global">applyfriendpage.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CustomizeEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">customizeedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

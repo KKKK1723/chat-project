@@ -66,6 +66,9 @@ ChatDialog::ChatDialog(QWidget *parent)
     // 设置当前页面
     ui->stackedWidget->setCurrentWidget(ui->chat_page);
 
+    // 设置搜索列表的搜索编辑框
+    ui->search_list->SetSearchEdit(ui->search_edit);
+
     // 显示搜索列表
     connect(ui->search_edit, &QLineEdit::textChanged, this, [this]()
             {

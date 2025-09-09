@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
     gate_url_prefix = "http://"+gate_host+":"+gate_port;
 
 
+    qDebug() << "新的！！！！！！！！！！！！！！！！！！！！" ;
+
+
     MainWindow w;
     w.show();
     return a.exec();

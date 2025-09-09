@@ -28,12 +28,14 @@ SOURCES += \
     contactuserlist.cpp \
     conuseritem.cpp \
     customizeedit.cpp \
+    findfaildlg.cpp \
     findsuccessdialog.cpp \
     friendlabel.cpp \
     global.cpp \
     grouptipitem.cpp \
     httpmgr.cpp \
     listitembase.cpp \
+    loadingdlg.cpp \
     logindialog.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -69,12 +71,14 @@ HEADERS += \
     contactuserlist.h \
     conuseritem.h \
     customizeedit.h \
+    findfaildlg.h \
     findsuccessdialog.h \
     friendlabel.h \
     global.h \
     grouptipitem.h \
     httpmgr.h \
     listitembase.h \
+    loadingdlg.h \
     logindialog.h \
     mainwindow.h \
     messagetextedit.h \
@@ -99,9 +103,11 @@ FORMS += \
     chatpage.ui \
     chatuserwid.ui \
     conuseritem.ui \
+    findfaildlg.ui \
     findsuccessdialog.ui \
     friendlabel.ui \
     grouptipitem.ui \
+    loadingdlg.ui \
     logindialog.ui \
     mainwindow.ui \
     registerdialog.ui \
